@@ -31,7 +31,7 @@ class _QuizzCardState extends State<QuizzCard> {
         setState(() {
           isLoading = true;
         });
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 20));
         widget.onSelected(widget.title);
         setState(() {
           isLoading = false;

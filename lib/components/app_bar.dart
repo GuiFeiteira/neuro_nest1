@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tipo_treino/screens/home_page.dart';
 import 'package:tipo_treino/screens/mymeds_page.dart';
+import 'add_meds.dart';
 
 class BottonAppBar extends StatefulWidget {
   const BottonAppBar({Key? key}) : super(key: key);
@@ -72,6 +73,71 @@ class _BottonAppBarState extends State<BottonAppBar> {
           ),
           IconButton(
             onPressed: () {
+              showModalBottomSheet<void>(
+                isDismissible: true,
+                backgroundColor: Colors.transparent,
+                context: context,
+                  builder: (BuildContext context){
+                    return SizedBox(
+                    height: 300,
+                        child: Center(
+                        child: Column(
+                        children: <Widget>[
+
+                          ElevatedButton(
+
+                          child: const Text('Add Event'),
+                          onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          ElevatedButton(
+                            child: const Text('Add Medication'),
+                            onPressed: (){
+                              showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (BuildContext context){
+                                    return AddMedicationForm(
+                                        onSuccess: (medicationName, dosageFrequency){
+                                          print('Medication added $medicationName, ');
+                                        }
+                                        );
+                                  },
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          ElevatedButton(
+                            child: const Text('Add Habit '),
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+
+                              minimumSize: Size(200, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+
+                            ),
+                          ),
+                        ]
+                    )
+                        )
+                    );
+                  }
+              );
 
               setState(() {
                 _selectedIndex = 2;
@@ -94,6 +160,7 @@ class _BottonAppBarState extends State<BottonAppBar> {
           ),
           IconButton(
             onPressed: () {
+
               setState(() {
                 _selectedIndex = 3;
               });

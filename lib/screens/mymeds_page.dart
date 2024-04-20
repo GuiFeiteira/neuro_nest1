@@ -12,6 +12,12 @@ class MedsPage extends StatefulWidget {
 }
 
 class _MedsPageState extends State<MedsPage> {
+  // Assuming you have a list of medications with name and time properties
+  final List<Medication> medications = [
+    Medication(name: 'Medication 1', time: '10:00 AM'),
+    Medication(name: 'Medication 2', time: '12:00 PM'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +48,36 @@ class _MedsPageState extends State<MedsPage> {
                       ),
                     ),
                     SizedBox(height: 23),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Line8(),
+                    ListView.builder(
+                      // Use ListView.builder for dynamic list rendering
+                      shrinkWrap: true, // Prevent unnecessary scrolling
+                      itemCount: medications.length,
+                      itemBuilder: (context, index) {
+                        final medication = medications[index];
+                        return Row(
+                          children: [
+                            Line8(), // Separator line
+                            SizedBox(width: 10.0), // Spacing between line and content
+                            Expanded(
+                              child: Text(
+                                medication.name,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
 
+                            Text(
+                              medication.time,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -54,11 +86,17 @@ class _MedsPageState extends State<MedsPage> {
           ),
         ],
       ),
-
       bottomNavigationBar: BottonAppBar(),
-
     );
-
   }
 }
+
+class Medication {
+  final String name;
+  final String time;
+
+  Medication({required this.name, required this.time});
+}
+
+
 
