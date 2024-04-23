@@ -99,20 +99,16 @@ class _LandingPageState extends State<LandingPage> {
 
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "Sign In",
-                                      style: GoogleFonts.poppins(
-                                        textStyle: Theme.of(context).textTheme.displayLarge,
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w700,
-
-                                      ),
-                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 20),
+                                      padding: const EdgeInsets.only(bottom: 22.0),
                                       child: Text(
-                                        "bahhhhhh",
-                                        textAlign: TextAlign.center,
+                                        "Sign In",
+                                        style: GoogleFonts.poppins(
+                                          textStyle: Theme.of(context).textTheme.displayLarge,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w700,
+
+                                        ),
                                       ),
                                     ),
                                     const SignInForm(),
@@ -135,7 +131,7 @@ class _LandingPageState extends State<LandingPage> {
                                       style: TextStyle(color: Colors.black54),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 23),
+                                      padding: const EdgeInsets.only(top: 26),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [

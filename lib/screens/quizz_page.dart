@@ -32,7 +32,12 @@ class _QuizPageState extends State<QuizPage> {
         {"title": "Just Left Side", "imagePath": "assets/left.png"},
         {"title": "Can’t Tell / Other", "imagePath":""},
       ],
-      // Adicione mais conjuntos conforme necessário
+      [
+        {"title": "Jerking", "imagePath": "assets/jerking.png"},
+        {"title": "Stiffness", "imagePath": "assets/Stiffness.png"},
+        {"title": "Both", "imagePath": "assets/both.png"},
+        {"title": "Can’t Tell / Other", "imagePath":""},
+      ],
     ];
   }
 

@@ -101,6 +101,9 @@ class _BottonAppBarState extends State<BottonAppBar> {
                             child: const Text('Add Medication'),
                             onPressed: (){
                               showModalBottomSheet<void>(
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                  constraints: BoxConstraints(maxHeight: 600),
                                   context: context,
                                   builder: (BuildContext context){
                                     return AddMedicationForm(
@@ -109,6 +112,7 @@ class _BottonAppBarState extends State<BottonAppBar> {
                                         }
                                         );
                                   },
+
                               );
                             },
                             style: ElevatedButton.styleFrom(

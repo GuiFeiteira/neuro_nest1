@@ -4,14 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 class QuizzCard extends StatefulWidget {
   final String title;
   final String imagePath;
-  final Function(String) onSelected; // Callback function to store information
-  final double opacity; // Opacity value for the card
+  final Function(String) onSelected;
+  final double opacity;
 
   const QuizzCard({
     required this.title,
     required this.imagePath,
     required this.onSelected,
-    required this.opacity, // Receive opacity value as parameter
+    required this.opacity,
     Key? key,
   }) : super(key: key);
 
