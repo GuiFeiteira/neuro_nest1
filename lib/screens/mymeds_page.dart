@@ -12,7 +12,6 @@ class MedsPage extends StatefulWidget {
 }
 
 class _MedsPageState extends State<MedsPage> {
-  // Assuming you have a list of medications with name and time properties
   final List<Medication> medications = [
     Medication(name: 'Medication 1', time: '10:00 AM'),
     Medication(name: 'Medication 2', time: '12:00 PM'),
@@ -22,9 +21,7 @@ class _MedsPageState extends State<MedsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF8ECFF),
-      appBar: AppBar(
-        title: Text('My Meds'),
-      ),
+      
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -37,14 +34,17 @@ class _MedsPageState extends State<MedsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Next On : ",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                        height: 0,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 18.0),
+                      child: Text(
+                        "Next On : ",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          height: 0,
+                        ),
                       ),
                     ),
                     SizedBox(height: 23),

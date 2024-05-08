@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tipo_treino/screens/home_page.dart';
+
 import 'package:tipo_treino/screens/mymeds_page.dart';
-import 'package:tipo_treino/screens/quizz_page.dart';
+
 
 class SignInForm extends StatelessWidget {
   const SignInForm({
@@ -81,3 +82,4 @@ class SignInForm extends StatelessWidget {
     );
   }
 }
+

@@ -2,7 +2,10 @@ import 'package:bottom_picker/resources/arrays.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:flutter/widgets.dart';
 import '../screens/mymeds_page.dart';
+import 'package:intl/intl.dart';
+
 
 class AddMedicationForm extends StatefulWidget {
   final Function(String, String) onSuccess; // Callback for successful addition
@@ -18,6 +21,8 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
   final _nameController = TextEditingController();
   final _frequencyOptions = ['Diariamente', 'Duas Vezes ao Dia', 'Três Vezes ao Dia'];
   String? _selectedFrequency;
+  List<TextEditingController> _timeControllers = [];
+
 
   List<Medication> _availableMedications = [
     Medication(name: 'Medication 1', time: '10:00 AM'),
@@ -51,9 +56,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
       // Clear form fields
       _nameController.clear();
       _selectedFrequency = null;
-      _filteredMedications = _availableMedications; // Reset filtered list
+      _filteredMedications = _availableMedications;
 
-      // Close modal bottom sheet (assuming it's called from there)
+
       Navigator.pop(context);
     }
   }
@@ -62,6 +67,39 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
     _filteredMedications = _availableMedications.where((medication) =>
         medication.name.toLowerCase().startsWith(searchTerm.toLowerCase())).toList();
     setState(() {});
+  }
+
+  void _showTimePicker() {
+    BottomPicker.time(
+      displayCloseIcon: false, // Hide close icon
+      popOnClose: false,
+      pickerTextStyle: TextStyle(
+        fontSize: 18,
+
+      ),
+      pickerTitle: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'Qual o horario de toma?',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: CupertinoColors.systemTeal,
+          ),
+        ),
+      ),
+      onSubmit: (time) {
+        setState(() {
+          _timeControllers.add(TextEditingController(text: DateFormat('HH:mm').format(time)));        });
+      },
+      onClose: () {},
+      bottomPickerTheme: BottomPickerTheme.morningSalad,
+      use24hFormat: true,
+      initialTime: Time(
+        minutes: 36,
+        hours: 12
+      ),
+    ).show(context);
   }
 
   @override
@@ -99,7 +137,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
               shrinkWrap: true, // Prevent list from expanding
               itemCount: _filteredMedications.length,
               itemBuilder: (context, index) {
-                   if (index < 4) {
+                   if (index < 3) {
 
                   final medication = _filteredMedications[index];
                   return ListTile(
@@ -108,15 +146,16 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                     title: Text(medication.name),
                     onTap: () {
                       _nameController.text = medication.name;
-                      _selectedFrequency = null; // Redefine a seleção de frequência
+                      _selectedFrequency = null;
                       setState(() {
-                        _filteredMedications.clear(); // Limpa a lista de medicamentos para fechá-la
+                        _filteredMedications.clear();
                       });
                     },
                   );
                 } else {
 
                 }
+                   return null;
               },
             ),
           ),
@@ -142,27 +181,39 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
             ),
           ),
           SizedBox(height: 20),
-          BottomPicker.time(
-            pickerTitle: Text(
-              'Qual o horario de toma?',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: CupertinoColors.systemTeal,
-              ),
-            ),
-            onSubmit: (index){
-              print(index);
-            },
-            onClose: (){
-              print('object');
-            },
-            bottomPickerTheme: BottomPickerTheme.morningSalad,
-            use24hFormat: true,
-            initialTime: Time(
-              minutes: 16,
-            ),
 
+          Visibility(
+            visible: _selectedFrequency == 'Duas Vezes ao Dia',
+            child: Column(
+              children: [
+                TextButton(
+                  onPressed: _showTimePicker,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.access_time), // Clock icon
+                      SizedBox(width: 10),
+                      Text('Adicionar 1º horário'),
+                    ],
+                  ),
+                ),
+                if (_timeControllers.length > 0)
+                  TextButton(
+                    style: ButtonStyle(
+
+                    ),
+                    onPressed: _showTimePicker,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.access_time), // Clock icon
+                        SizedBox(width: 10),
+                        Text('Adicionar 2º horário'),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
           ElevatedButton(
             onPressed: _submitMedication,
