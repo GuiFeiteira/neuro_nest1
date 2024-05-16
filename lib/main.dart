@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'screens/landing_page.dart';
-import 'screens/mymeds_page.dart';
-import 'screens/quizz_page.dart';
-import '../components/app_bar.dart';
-import './screens/mymeds_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 void main() async {
-  ///WidgetsFlutterBinding.ensureInitialized();
-  ///await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(const MyApp()); // Call runApp first to initialize bindings
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -3,7 +3,6 @@ import 'package:sign_button/sign_button.dart';
 import 'package:tipo_treino/screens/quizz_page.dart';
 import '../components/anim_butt.dart';
 import '../components/signIn_form.dart';
-
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:google_fonts/google_fonts.dart';
