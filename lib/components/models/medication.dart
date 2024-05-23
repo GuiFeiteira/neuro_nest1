@@ -1,9 +1,9 @@
 class Medication {
-  final String id; // Unique identifier for the medication
-  String name; // Medication name
-  String dosage; // Medication dosage
-  String frequency; // Medication frequency (e.g., daily, twice a day)
-  String? notes; // Optional notes about the medication
+  final String id;
+  String name;
+  String dosage;
+  String frequency;
+  String? notes;
 
   Medication({
     required this.id,

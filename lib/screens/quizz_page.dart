@@ -18,9 +18,10 @@ class _QuizPageState extends State<QuizPage> {
   @override
   void initState() {
     super.initState();
-    // Inicialize os conjuntos de cartões com títulos e imagens
+
     cardSets = [
       [
+
         {"title": "Fully Aware", "imagePath": "assets/fully aware.png"},
         {"title": "Confused", "imagePath": "assets/confused.png"},
         {"title": "Responds to Voice", "imagePath": "assets/Responds_voice.png"},
@@ -45,9 +46,6 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF8ECFF),
-      appBar: AppBar(
-        title: Text('Event Report'),
-      ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(

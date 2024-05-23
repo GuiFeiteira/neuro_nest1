@@ -18,7 +18,6 @@ class _LandingPageState extends State<LandingPage> {
   late RiveAnimationController _btncontroller;
 
   @override
-
   void initState() {
     _btncontroller = OneShotAnimation(
       "active",
@@ -44,7 +43,7 @@ class _LandingPageState extends State<LandingPage> {
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 80),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
               child: Column(
                 children: [
                   SizedBox(
@@ -53,27 +52,19 @@ class _LandingPageState extends State<LandingPage> {
                       children: [
                         Text(
                           "NeuroNest",
-                          style:
-                            GoogleFonts.permanentMarker(
-                              textStyle: Theme.of(context).textTheme.displayLarge,
-                              fontSize: 48,
-                              fontWeight: FontWeight.w700,
-                              //fontStyle: FontStyle.italic,
-
-                            ),
+                          style: GoogleFonts.permanentMarker(
+                            textStyle: Theme.of(context).textTheme.displayLarge,
+                            fontSize: 48,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-
                         Text(
                           "Your Brain in The Cloud",
-                          style:
-                          GoogleFonts.robotoMono(
-
-                          ),
+                          style: GoogleFonts.robotoMono(),
                         ),
                       ],
                     ),
                   ),
-
                   const Spacer(flex: 2),
                   AnimatedBtn(
                     btncontroller: _btncontroller,
@@ -81,32 +72,31 @@ class _LandingPageState extends State<LandingPage> {
                       _btncontroller.isActive = true;
                       showGeneralDialog(
                         barrierDismissible: true,
-                          barrierLabel: "Sign in",
+                        barrierLabel: "Sign in",
                         context: context,
                         pageBuilder: (context, _, __) => Center(
                           child: Container(
-                            height: 550,
-                            margin: EdgeInsets.symmetric(horizontal: 40),
-                            padding: EdgeInsets.symmetric(vertical:20 ,horizontal: 24),
+                            height: 650,
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
+                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                             decoration: BoxDecoration(
-                                color: Color(0xFFF8ECFF).withOpacity(0.95),
-                              borderRadius: BorderRadius.all(Radius.circular(45))
+                              color: const Color(0xFFF8ECFF).withOpacity(0.95),
+                              borderRadius: const BorderRadius.all(Radius.circular(45)),
                             ),
                             child: Scaffold(
                               backgroundColor: Colors.transparent,
-                              body: Column(
-
+                              body: SingleChildScrollView( // Adicionado SingleChildScrollView
+                                child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(bottom: 22.0),
+                                      padding: const EdgeInsets.only(bottom: 10.0,top: 15),
                                       child: Text(
                                         "Sign In",
                                         style: GoogleFonts.poppins(
                                           textStyle: Theme.of(context).textTheme.displayLarge,
                                           fontSize: 30,
                                           fontWeight: FontWeight.w700,
-
                                         ),
                                       ),
                                     ),
@@ -115,18 +105,19 @@ class _LandingPageState extends State<LandingPage> {
                                       children: [
                                         Expanded(child: Divider()),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                                          child: Text("OR",
-                                          style:  TextStyle(
-                                            color: Colors.black54,
-                                          ),
+                                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                          child: Text(
+                                            "OR",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                            ),
                                           ),
                                         ),
                                         Expanded(child: Divider()),
                                       ],
                                     ),
                                     Text(
-                                      "Sign up with Google or Facebook ",
+                                      "Sign up with Google or Facebook",
                                       style: TextStyle(color: Colors.black54),
                                     ),
                                     Padding(
@@ -134,31 +125,28 @@ class _LandingPageState extends State<LandingPage> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-
                                           SignInButton.mini(
                                             buttonSize: ButtonSize.medium,
-                                              buttonType: ButtonType.facebook,
-                                              onPressed: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => QuizPage()
-                                                    ));
-
-                                              }),
+                                            buttonType: ButtonType.facebook,
+                                            onPressed: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => QuizPage()));
+                                            },
+                                          ),
                                           SignInButton.mini(
-                                              buttonSize: ButtonSize.medium,
-                                              buttonType: ButtonType.google,
-                                              onPressed: () {
-                                                print('click');
-                                              }),
-
+                                            buttonSize: ButtonSize.medium,
+                                            buttonType: ButtonType.google,
+                                            onPressed: () {
+                                              print('click');
+                                            },
+                                          ),
                                         ],
                                       ),
-                                    )
+                                    ),
                                   ],
-
+                                ),
                               ),
-
                             ),
                           ),
                         ),
@@ -173,7 +161,4 @@ class _LandingPageState extends State<LandingPage> {
       ),
     );
   }
-
-
 }
-
