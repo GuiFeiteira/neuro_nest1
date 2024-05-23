@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:sign_button/sign_button.dart';
+import 'package:tipo_treino/components/signUp_form.dart';
 import 'package:tipo_treino/screens/quizz_page.dart';
 import '../components/anim_butt.dart';
 import '../components/signIn_form.dart';
@@ -66,92 +67,146 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   ),
                   const Spacer(flex: 2),
-                  AnimatedBtn(
-                    btncontroller: _btncontroller,
-                    press: () {
-                      _btncontroller.isActive = true;
-                      showGeneralDialog(
-                        barrierDismissible: true,
-                        barrierLabel: "Sign in",
-                        context: context,
-                        pageBuilder: (context, _, __) => Center(
-                          child: Container(
-                            height: 650,
-                            margin: const EdgeInsets.symmetric(horizontal: 40),
-                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8ECFF).withOpacity(0.95),
-                              borderRadius: const BorderRadius.all(Radius.circular(45)),
-                            ),
-                            child: Scaffold(
-                              backgroundColor: Colors.transparent,
-                              body: SingleChildScrollView( // Adicionado SingleChildScrollView
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 10.0,top: 15),
-                                      child: Text(
-                                        "Sign In",
-                                        style: GoogleFonts.poppins(
-                                          textStyle: Theme.of(context).textTheme.displayLarge,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                    const SignInForm(),
-                                    const Row(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      AnimatedBtn(
+                        label: "Sign In",
+                        btncontroller: _btncontroller,
+                        press: () {
+                          _btncontroller.isActive = true;
+                          showGeneralDialog(
+                            barrierDismissible: true,
+                            barrierLabel: "Sign in",
+                            context: context,
+                            pageBuilder: (context, _, __) => Center(
+                              child: Container(
+                                height: 650,
+                                margin: const EdgeInsets.symmetric(horizontal: 40),
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8ECFF).withOpacity(0.95),
+                                  borderRadius: const BorderRadius.all(Radius.circular(45)),
+                                ),
+                                child: Scaffold(
+                                  backgroundColor: Colors.transparent,
+                                  body: SingleChildScrollView( // Adicionado SingleChildScrollView
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Expanded(child: Divider()),
                                         Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                          padding: const EdgeInsets.only(bottom: 10.0,top: 15),
                                           child: Text(
-                                            "OR",
-                                            style: TextStyle(
-                                              color: Colors.black54,
+                                            "Sign In",
+                                            style: GoogleFonts.poppins(
+                                              textStyle: Theme.of(context).textTheme.displayLarge,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
                                             ),
                                           ),
                                         ),
-                                        Expanded(child: Divider()),
+                                        const SignInForm(),
+                                        const Row(
+                                          children: [
+                                            Expanded(child: Divider()),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                              child: Text(
+                                                "OR",
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(child: Divider()),
+                                          ],
+                                        ),
+                                        Text(
+                                          "Sign up with Google or Facebook",
+                                          style: TextStyle(color: Colors.black54),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 26),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              SignInButton.mini(
+                                                buttonSize: ButtonSize.medium,
+                                                buttonType: ButtonType.facebook,
+                                                onPressed: () {
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => QuizPage()));
+                                                },
+                                              ),
+                                              SignInButton.mini(
+                                                buttonSize: ButtonSize.medium,
+                                                buttonType: ButtonType.google,
+                                                onPressed: () {
+                                                  print('click');
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    Text(
-                                      "Sign up with Google or Facebook",
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 26),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          SignInButton.mini(
-                                            buttonSize: ButtonSize.medium,
-                                            buttonType: ButtonType.facebook,
-                                            onPressed: () {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) => QuizPage()));
-                                            },
-                                          ),
-                                          SignInButton.mini(
-                                            buttonSize: ButtonSize.medium,
-                                            buttonType: ButtonType.google,
-                                            onPressed: () {
-                                              print('click');
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                      SizedBox(width: 10),
+                      AnimatedBtn(
+                        label: "Sign Up",
+                        btncontroller: _btncontroller,
+                        press: () {
+                          _btncontroller.isActive = true;
+                          showGeneralDialog(
+                            barrierDismissible: true,
+                            barrierLabel: "Sign Up",
+                            context: context,
+                            pageBuilder: (context, _, __) => Center(
+                              child: Container(
+                                height: 430,
+                                margin: const EdgeInsets.symmetric(horizontal: 40),
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8ECFF).withOpacity(0.95),
+                                  borderRadius: const BorderRadius.all(Radius.circular(45)),
+                                ),
+                                child: Scaffold(
+                                  backgroundColor: Colors.transparent,
+                                  body: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 10.0,top: 15),
+                                          child: Text(
+                                            "Sign Up",
+                                            style: GoogleFonts.poppins(
+                                              textStyle: Theme.of(context).textTheme.displayLarge,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        const SignUpForm(),
+
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

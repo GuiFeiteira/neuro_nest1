@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tipo_treino/screens/home_page.dart';
 import 'package:tipo_treino/screens/mymeds_page.dart';
+import '../screens/quizz_page.dart';
 import 'add_meds.dart';
 
 class BottonAppBar extends StatefulWidget {
@@ -87,7 +88,9 @@ class _BottonAppBarState extends State<BottonAppBar> {
                           ElevatedButton(
 
                           child: const Text('Add Event'),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () =>                                               Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuizPage())),
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(200, 50),
                               shape: RoundedRectangleBorder(

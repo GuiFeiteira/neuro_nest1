@@ -72,7 +72,7 @@ class _SignInFormState extends State<SignInForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Icon(
-                    color: Colors.deepPurpleAccent,
+                    color: Colors.indigo,
                     Icons.person_outline,
                   ),
                 ),
@@ -94,7 +94,7 @@ class _SignInFormState extends State<SignInForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Icon(
-                    color: Colors.deepPurpleAccent,
+                    color: Colors.indigo,
                     Icons.calendar_today_outlined,
                   ),
                 ),
@@ -131,7 +131,7 @@ class _SignInFormState extends State<SignInForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Icon(
-                    color: Colors.deepPurpleAccent,
+                    color: Colors.indigo,
                     Icons.email_outlined,
                   ),
                 ),
@@ -154,7 +154,7 @@ class _SignInFormState extends State<SignInForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Icon(
-                    color: Colors.deepPurpleAccent,
+                    color: Colors.indigo,
                     Icons.lock_outline_rounded,
                   ),
                 ),

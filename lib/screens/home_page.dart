@@ -84,7 +84,8 @@ class HomePage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(7.0),
                   child: Text(
-                    "Como dormiu hoje ?", // Texto adicional
+                    "How did you sleep today ?",
+
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,

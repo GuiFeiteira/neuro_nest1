@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SleepOptionBar extends StatelessWidget {
-  final List<String> buttonLabels = ['Melhor', 'Normal', ' Pior '];
+  final List<String> buttonLabels = ['Better', 'Normal', ' Worst '];
   final List<void Function()> buttonActions = [
         () {
       print('Button 1 pressed');

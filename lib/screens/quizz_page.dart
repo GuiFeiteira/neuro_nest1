@@ -11,6 +11,7 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   int currentIndex = 0;
   late List<List<Map<String, String>>> cardSets;
+  late List<String> cardTitles;
 
   String? selectedCardTitle;
   bool isCardSelected = false;
@@ -21,7 +22,6 @@ class _QuizPageState extends State<QuizPage> {
 
     cardSets = [
       [
-
         {"title": "Fully Aware", "imagePath": "assets/fully aware.png"},
         {"title": "Confused", "imagePath": "assets/confused.png"},
         {"title": "Responds to Voice", "imagePath": "assets/Responds_voice.png"},
@@ -40,6 +40,12 @@ class _QuizPageState extends State<QuizPage> {
         {"title": "Can’t Tell / Other", "imagePath":""},
       ],
     ];
+
+    cardTitles = [
+      "Awareness",
+      "Body seizure",
+      "Movements",
+    ];
   }
 
   @override
@@ -51,11 +57,14 @@ class _QuizPageState extends State<QuizPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Awareness",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.only(top: 18.0),
+              child: Text(
+                cardTitles[currentIndex],
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 30.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -117,14 +126,15 @@ class _QuizPageState extends State<QuizPage> {
 
   void handleCardSelection(String title) {
     setState(() {
-      selectedCardTitle = title; // Atualiza o título do cartão selecionado
-      isCardSelected = true;    });
+      selectedCardTitle = title;
+      isCardSelected = true;
+    });
   }
 
   void handleNext() {
     setState(() {
       if (currentIndex < cardSets.length - 1) {
-        currentIndex++; // Avança para o próximo conjunto de cartões
+        currentIndex++;
         selectedCardTitle = null;
         isCardSelected = false;
       }
@@ -134,7 +144,7 @@ class _QuizPageState extends State<QuizPage> {
   void handleBack() {
     setState(() {
       if (currentIndex > 0) {
-        currentIndex--; // Retrocede para o conjunto anterior de cartões
+        currentIndex--;
         selectedCardTitle = null;
         isCardSelected = false;
       }
