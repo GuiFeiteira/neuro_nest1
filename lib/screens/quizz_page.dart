@@ -39,12 +39,26 @@ class _QuizPageState extends State<QuizPage> {
         {"title": "Both", "imagePath": "assets/both.png"},
         {"title": "Can’t Tell / Other", "imagePath":""},
       ],
+      [
+        {"title": "All body Jerking", "imagePath": "assets/AllBodyJerking.png"},
+        {"title": "Legs Jerking", "imagePath": "assets/cramp.png"},
+        {"title": "Arm Jerking", "imagePath": "assets/ArmJerking.png"},
+        {"title": "Can’t Tell / Other", "imagePath":""},
+      ],
+      [
+        {"title": "Staring", "imagePath": "assets/Eyes.png"},
+        {"title": "Eyes up", "imagePath": "assets/eyes up.png"},
+        {"title": "Eyes down", "imagePath": "assets/eyes down.png"},
+        {"title": "Eyes Rolling", "imagePath":"assets/eyes rolling.png"},
+      ],
     ];
 
     cardTitles = [
       "Awareness",
       "Body seizure",
       "Movements",
+      "Jerking Movements",
+      "Eyes"
     ];
   }
 

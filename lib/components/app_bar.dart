@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tipo_treino/screens/home_page.dart';
@@ -5,15 +6,131 @@ import 'package:tipo_treino/screens/mymeds_page.dart';
 import '../screens/quizz_page.dart';
 import 'add_meds.dart';
 
-class BottonAppBar extends StatefulWidget {
-  const BottonAppBar({Key? key}) : super(key: key);
+class BottomAppBarCustom extends StatefulWidget {
+  final int selectedIndex;
+
+  const BottomAppBarCustom({Key? key, required this.selectedIndex}) : super(key: key);
 
   @override
-  _BottonAppBarState createState() => _BottonAppBarState();
+  _BottomAppBarCustomState createState() => _BottomAppBarCustomState();
 }
 
-class _BottonAppBarState extends State<BottonAppBar> {
-  int _selectedIndex = 0;
+class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
+
+  void _onItemTapped(int index) {
+    if (_selectedIndex == index && index != 2) return;
+
+    if (index != 2) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MedsPage()),
+        );
+        break;
+      case 2:
+        showModalBottomSheet<void>(
+          isDismissible: true,
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (BuildContext context) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: 15),
+                Container(
+                  width: 200.0,
+                  height: 50.0,
+                  child: FloatingActionButton.extended(
+                    label: const Text('Add Event'),
+                    icon: const Icon(Icons.sensor_occupied_sharp),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QuizPage()),
+                    ),
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+
+                SizedBox(height: 20),
+                Container(
+                  width: 200.0,
+                  height: 50.0,
+                  child: FloatingActionButton.extended(
+                    label: const Text('Add Medication'),
+                    icon: const Icon(Icons.medication_outlined),
+                    onPressed: () {
+                      showModalBottomSheet<void>(
+                        isScrollControlled: true,
+                        useSafeArea: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AddMedicationForm(
+                            onSuccess: (medicationName, dosageFrequency) {
+                              print('Medication added $medicationName, ');
+                            },
+                          );
+                        },
+                      );
+                    },
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+
+                SizedBox(height: 15),
+                Container(
+                  width: 200.0,
+                  height: 50.0,
+                  child: FloatingActionButton.extended(
+                    label: const Text('Add Habit'),
+                    icon: const Icon(Icons.sports_handball_sharp),
+                    onPressed: () {
+                      AwesomeNotifications().createNotification(
+                          content: NotificationContent(
+                              id: 1,
+                              channelKey: 'not_channel',
+                              title: 'Helloooooo',
+                              body: 'MAluco sao horas cde tomares as tuas drogas'
+                          ),
+
+                      );
+                    },
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+
+                SizedBox(height: 130),
+              ],
+            );
+          },
+        );
+        break;
+      case 3:
+      // Navegação para a página de calendário
+        break;
+      case 4:
+      // Navegação para a página de SOS
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,36 +145,15 @@ class _BottonAppBarState extends State<BottonAppBar> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 0;
-              });
-              Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage()
-                  ));
-
-            },
+            onPressed: () => _onItemTapped(0),
             icon: Icon(
-              _selectedIndex == 0
-                  ? Icons.home_rounded
-                  : Icons.home_outlined,
+              _selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
               size: 40,
               color: Colors.white,
             ),
           ),
           IconButton(
-            onPressed: () {
-
-              Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (context) => MedsPage()
-
-                  ));
-              setState(() {
-                _selectedIndex = 1;
-              });
-            },
+            onPressed: () => _onItemTapped(1),
             icon: _selectedIndex == 1
                 ? Image.asset(
               'assets/pills.png',
@@ -73,105 +169,23 @@ class _BottonAppBarState extends State<BottonAppBar> {
             ),
           ),
           IconButton(
-            onPressed: () {
-              showModalBottomSheet<void>(
-                isDismissible: true,
-                backgroundColor: Colors.transparent,
-                context: context,
-                  builder: (BuildContext context){
-                    return SizedBox(
-                    height: 300,
-                        child: Center(
-                        child: Column(
-                        children: <Widget>[
-
-                          ElevatedButton(
-
-                          child: const Text('Add Event'),
-                          onPressed: () =>                                               Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (context) => QuizPage())),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          ElevatedButton(
-                            child: const Text('Add Medication'),
-                            onPressed: (){
-                              showModalBottomSheet<void>(
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                  constraints: BoxConstraints(maxHeight: 600),
-                                  context: context,
-                                  builder: (BuildContext context){
-                                    return AddMedicationForm(
-                                        onSuccess: (medicationName, dosageFrequency){
-                                          print('Medication added $medicationName, ');
-                                        }
-                                        );
-                                  },
-
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-
-                            ),
-                          ),
-                          SizedBox(height: 15),
-                          ElevatedButton(
-                            child: const Text('Add Habit '),
-                            onPressed: () => Navigator.pop(context),
-                            style: ElevatedButton.styleFrom(
-
-                              minimumSize: Size(200, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-
-                            ),
-                          ),
-                        ]
-                    )
-                        )
-                    );
-                  }
-              );
-
-              setState(() {
-                _selectedIndex = 2;
-              });
-
-            },
-            icon: Container(height: 50, width: 50,
+            onPressed: () => _onItemTapped(2),
+            icon: Container(
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                 color: Color(0xFF9D4EDD),
                 borderRadius: BorderRadius.all(Radius.circular(100)),
               ),
               child: Icon(
-                _selectedIndex == 2
-                    ? CupertinoIcons.plus
-                    : CupertinoIcons.plus,
+                CupertinoIcons.plus,
                 size: 40,
                 color: Colors.white,
               ),
             ),
           ),
           IconButton(
-            onPressed: () {
-
-              setState(() {
-                _selectedIndex = 3;
-              });
-            },
+            onPressed: () => _onItemTapped(3),
             icon: Icon(
               _selectedIndex == 3
                   ? Icons.calendar_today
@@ -181,15 +195,9 @@ class _BottonAppBarState extends State<BottonAppBar> {
             ),
           ),
           IconButton(
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 4;
-              });
-            },
+            onPressed: () => _onItemTapped(4),
             icon: Icon(
-              _selectedIndex == 4
-                  ? Icons.sos
-                  : Icons.sos_outlined,
+              _selectedIndex == 4 ? Icons.sos : Icons.sos_outlined,
               size: 40,
               color: Colors.white,
             ),

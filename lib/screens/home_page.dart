@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tipo_treino/components/moodOptionBar.dart';
 import 'package:tipo_treino/components/sleep.dart';
 import '../components/app_bar.dart';
 
@@ -17,6 +18,41 @@ class HomePage extends StatelessWidget {
     }
     return null;
   }
+  void _showProfileDialog(BuildContext context, String userName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Profile Settings"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: Text(userName), // Display the user's name
+              subtitle: const Text("View/Edit Profile"),
+              onTap: () {
+                // TODO: Navigate to profile editing screen
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: const Text("Change Language"),
+              onTap: () {
+                // TODO: Implement language selection logic
+              },
+            ),
+            // Add more options as needed (e.g., logout, settings)
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +62,6 @@ class HomePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/background_image.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -40,7 +70,7 @@ class HomePage extends StatelessWidget {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
                             "Welcome Back,",
@@ -50,7 +80,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           CircleAvatar(
-                            backgroundImage: AssetImage('assets/profile_picture.png'),
+                            //backgroundImage: AssetImage('assets/profile_picture.png'),
                             radius: 30,
                           ),
                         ],
@@ -62,25 +92,33 @@ class HomePage extends StatelessWidget {
                     } else {
                       String userName = snapshot.data!;
                       return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
                             "Welcome Back, $userName",
                             style: TextStyle(
                               fontSize: 22,
                               color: Colors.black87,
+
                             ),
                           ),
-                          CircleAvatar(
-                            backgroundImage: AssetImage('assets/profile_picture.png'),
+                    GestureDetector(
+                    onTap: () {
+                      if (snapshot.hasData && snapshot.data != null) {
+                          _showProfileDialog(context, snapshot.data!); // Show dialog if user data is available
+                        }
+                    },
+                          child: CircleAvatar(
+                            //backgroundImage: AssetImage('assets/profile_picture.png'),
                             radius: 30,
                           ),
+                    ),
                         ],
                       );
                     }
                   },
                 ),
-                SizedBox(height: 8), // Adicione espaço entre os elementos
+                SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.all(7.0),
                   child: Text(
@@ -92,13 +130,25 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SleepOptionBar()
+                SleepOptionBar(),
+                SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.all(7.0),
+                  child: Text(
+                    "Como te sentes hoje?",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                MoodOptionBar()
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: BottonAppBar(), // Use const for static widgets
+      bottomNavigationBar: BottomAppBarCustom(selectedIndex: 0,), // Use const for static widgets
     );
   }
 }

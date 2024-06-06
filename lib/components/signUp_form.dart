@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/home_page.dart';
 
@@ -23,7 +24,8 @@ class _SignInFormState extends State<SignUpForm> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', true);
       // Navigate to home page on successful sign-in
       Navigator.pushReplacement(
         context,
@@ -73,7 +75,7 @@ class _SignInFormState extends State<SignUpForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 60, right: 60, top: 30),
+            padding: const EdgeInsets.only(left: 60, right: 60, top: 30 ),
             child: ElevatedButton.icon(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
