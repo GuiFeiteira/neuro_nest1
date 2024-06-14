@@ -1,8 +1,10 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:bottom_picker/bottom_picker.dart';
 
 import '../components/anim_butt.dart';
 import '../components/app_bar.dart';
@@ -34,21 +36,24 @@ class _MedsPageState extends State<MedsPage> {
           .where('user_id', isEqualTo: user.uid)
           .get();
 
+      print('User ID: ${user.uid}');
+      print('Fetched ${snapshot.docs.length} medications');
+
       List<Medication> allMedications = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print('Medication Data: $data');
         List<String> times = List<String>.from(data['times']);
+        List<String> days = List<String>.from(data['days']);
+        print('Times: $times, Days: $days');
         return times.map((time) => Medication(
           name: data['name'],
           time: time,
+          days: days,
           isTaken: data['taken_dates']?.contains(_getCurrentDateKey(time)) ?? false,
           id: doc.id,
         )).toList();
       }).expand((element) => element).toList();
-
-      print('All Medications:');
-      allMedications.forEach((medication) {
-        print('${medication.name} - ${medication.time}');
-      });
+      print('All Medications: $allMedications');
 
       _filterAndSortMedications(allMedications);
     }
@@ -60,31 +65,34 @@ class _MedsPageState extends State<MedsPage> {
 
   void _filterAndSortMedications(List<Medication> medications) {
     DateTime now = DateTime.now();
+    String currentDay = _normalizeDay(DateFormat('EEEE').format(now));
     DateFormat timeFormat = DateFormat('HH:mm');
-    print(now);
+    print('Current Day: $currentDay');
 
-    // Sort medications by time
-    medications.sort((a, b) => timeFormat.parse(a.time).compareTo(timeFormat.parse(b.time)));
+    List<Medication> todayMeds = medications.where((med) {
+      print('Checking medication: ${med.name}, Days: ${med.days}');
+      return med.days.map(_normalizeDay).contains(currentDay);
+    }).toList();
+    print('Today Medications: $todayMeds');
 
-    nextMedications = medications.where((med) {
+    todayMeds.sort((a, b) => timeFormat.parse(a.time).compareTo(timeFormat.parse(b.time)));
+    print('Sorted Today Medications: $todayMeds');
+
+    nextMedications = todayMeds.where((med) {
       DateTime medTime = timeFormat.parse(med.time);
-      return medTime.hour > now.hour  || (medTime.hour == now.hour  && medTime.minute > now.minute);
+      bool isNext = !med.isTaken && (medTime.hour > now.hour || (medTime.hour == now.hour && medTime.minute > now.minute));
+      print('Medication: ${med.name}, Time: ${med.time}, Is Next: $isNext');
+      return isNext;
     }).take(3).toList();
+    print('Next Medications: $nextMedications');
 
-
-    todayMedications = medications;
-
-    print('Medications for Today:');
-    todayMedications.forEach((medication) {
-      print('${medication.name} - ${medication.time}');
-    });
-
-    print('Next Medications:');
-    nextMedications.forEach((medication) {
-      print('${medication.name} - ${medication.time}');
-    });
+    todayMedications = todayMeds;
 
     setState(() {});
+  }
+
+  String _normalizeDay(String day) {
+    return day.trim().toLowerCase();
   }
 
   int createUniqueId() {
@@ -93,7 +101,7 @@ class _MedsPageState extends State<MedsPage> {
 
   String _getCurrentDateKey(String time) {
     final now = DateTime.now();
-    return "${now.year}-${now.month}-${now.day} $time";
+    return "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $time";
   }
 
   Future<void> _toggleMedicationTaken(Medication medication) async {
@@ -115,6 +123,82 @@ class _MedsPageState extends State<MedsPage> {
         });
       }
     }
+  }
+
+  Future<void> _showDifferentTimingDialog(Medication medication) async {
+    BottomPicker.time(
+      displayCloseIcon: false,
+      pickerTextStyle: TextStyle(fontSize: 18),
+      pickerTitle: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'Qual o horário de toma?',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: CupertinoColors.systemTeal,
+          ),
+        ),
+      ),
+      use24hFormat: true,
+      onSubmit: (selectedDateTime) async {
+        final String newTime = DateFormat('HH:mm').format(selectedDateTime);
+
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final docRef = FirebaseFirestore.instance.collection('medications').doc(medication.id);
+          await docRef.update({
+            'taken_dates': FieldValue.arrayUnion([_getCurrentDateKey('Diferent Timing - $newTime')]),
+          });
+          setState(() {
+            medication.isTaken = true;
+          });
+        }
+      }, initialTime: null,
+    ).show(context);
+  }
+
+  Future<void> _showSkippedDialog(Medication medication) async {
+    TextEditingController reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Skipped ${medication.name}'),
+          content: TextField(
+            controller: reasonController,
+            decoration: InputDecoration(
+              labelText: 'Enter reason for skipping',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () async {
+                User? user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  final docRef = FirebaseFirestore.instance.collection('medications').doc(medication.id);
+                  String reason = reasonController.text.trim();
+                  await docRef.update({
+                    'taken_dates': FieldValue.arrayUnion([_getCurrentDateKey("skipped - $reason")]),
+                  });
+                  setState(() {
+                    medication.isTaken = true;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -156,7 +240,7 @@ class _MedsPageState extends State<MedsPage> {
                       itemCount: nextMedications.length,
                       itemBuilder: (context, index) {
                         final medication = nextMedications[index];
-                        print(nextMedications.length);
+                        print('Next Medication: $medication');
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: Row(
@@ -219,6 +303,7 @@ class _MedsPageState extends State<MedsPage> {
                         itemCount: todayMedications.length,
                         itemBuilder: (context, index) {
                           final medication = todayMedications[index];
+                          print('Today Medication: $medication');
                           return GestureDetector(
                             onTap: () {
                               _toggleMedicationTaken(medication);
@@ -243,11 +328,10 @@ class _MedsPageState extends State<MedsPage> {
                                 PopupMenuButton<String>(
                                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                                   onSelected: (String value) {
-                                    // Handle menu selection here
                                     if (value == 'Different Timing') {
-                                      // Handle different timing
+                                      _showDifferentTimingDialog(medication);
                                     } else if (value == 'Skipped') {
-                                      // Handle skipped medication
+                                      _showSkippedDialog(medication);
                                     }
                                   },
                                   itemBuilder: (BuildContext context) {
@@ -274,11 +358,9 @@ class _MedsPageState extends State<MedsPage> {
               ),
             ),
           ),
-
         ],
       ),
       bottomNavigationBar: const BottomAppBarCustom(selectedIndex: 1),
     );
   }
 }
-

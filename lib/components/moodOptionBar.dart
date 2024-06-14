@@ -1,30 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
-class MoodOptionBar extends StatelessWidget {
-  final List<String> emojiLabels = ['😀', '🙂', '😐', '😞', '😡', '😭'];
-  final List<String> moodDescriptions = ['Feliz', 'Bom', 'Normal', 'Triste', 'Zangado', 'Muito Triste'];
-  final List<void Function()> emojiActions = [
-        () {
-      print('O utilizador está Feliz');
-    },
-        () {
-      print('O utilizador está Bom');
-    },
-        () {
-      print('O utilizador está Normal');
-    },
-        () {
-      print('O utilizador está Triste');
-    },
-        () {
-      print('O utilizador está Zangado');
-    },
-        () {
-      print('O utilizador está Muito Triste');
-    },
+class MoodOptionBar extends StatefulWidget {
+  @override
+  _MoodOptionBarState createState() => _MoodOptionBarState();
+}
+
+class _MoodOptionBarState extends State<MoodOptionBar> {
+  final List<String> imagePaths = [
+    'assets/happy.png',
+    'assets/happy.png',
+    'assets/normal.png',
+    'assets/stress.png',
+    'assets/litlesad.png',
+    'assets/angry.png',
+    'assets/sad.png',
   ];
-
-  MoodOptionBar({Key? key}) : super(key: key);
+  final List<String> moodDescriptions = [
+    'Feliz', 'Bom', 'Normal','Stressado', 'Triste', 'Zangado', 'Muito Triste'
+  ];
+  String? _selectedMood;
+  String? _selectedDescription;
+  String? _selectedImagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -35,40 +34,67 @@ class MoodOptionBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
-          Expanded(
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (int i = 0; i < emojiLabels.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: ElevatedButton(
-                      onPressed: emojiActions[i],
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 20, // Adjust radius as needed
-                        child: Text(
-                          emojiLabels[i],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        fixedSize: Size(40, 40),
-                        shape: CircleBorder(),
-                        elevation: 0, // Remove elevation to match CircleAvatar
-                      ),
+          DropdownButton<String>(
+            value: _selectedMood,
+            items: List.generate(imagePaths.length, (index) {
+              return DropdownMenuItem<String>(
+                value: moodDescriptions[index],
+                child: Row(
+                  children: [
+                    SizedBox(width: 8),
+                    Image.asset(
+                      imagePaths[index],
+                      width: 27,
+                      height: 27,
                     ),
-                  ),
-              ],
-            ),
+                    SizedBox(width: 18),
+                    Text(moodDescriptions[index]),
+                  ],
+                ),
+              );
+            }),
+            onChanged: (value) {
+              setState(() {
+                _selectedMood = value;
+                int selectedIndex = moodDescriptions.indexOf(value!);
+                _selectedDescription = moodDescriptions[selectedIndex];
+                _selectedImagePath = imagePaths[selectedIndex];
+              });
+            },
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+
+            ) ,
+            onPressed: _selectedMood == null ? null : _saveMood,
+            child: Text("Salvar"),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _saveMood() async {
+    if (_selectedMood == null || _selectedDescription == null || _selectedImagePath == null) return;
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DateTime now = DateTime.now();
+      String date = DateFormat('yyyy-MM-dd').format(now);
+      String time = DateFormat('HH:mm').format(now);
+
+      await FirebaseFirestore.instance.collection('moodEntries').add({
+        'userId': user.uid,
+        'mood': _selectedDescription,
+        'date': date,
+        'time': time,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Humor salvo com sucesso!')));
+    }
   }
 }

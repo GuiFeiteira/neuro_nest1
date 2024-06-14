@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/home_page.dart'; // Supondo que esta seja a página inicial após o login
+import 'screens/home_page.dart';
 import 'screens/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import './components/notifications/notification_controller.dart';
@@ -13,21 +12,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await   AwesomeNotifications().initialize(
-    'resource://drawable/res_app_icon',
-    [
-      NotificationChannel(
-        channelKey: 'medication_channel',
-        channelName: 'Medication Notifications',
-        channelDescription: 'Notification channel for medication reminders',
-        defaultColor: Color(0xFF9D50DD),
-        ledColor: Colors.white,
-        importance: NotificationImportance.High,
-        channelShowBadge: true,
-        locked: true,
-      ),
-    ],
-  );
+
+  await NotificationController.initializeNotifications();
+
   bool allowSentNotifications = await AwesomeNotifications().isNotificationAllowed();
   if( !allowSentNotifications){
     AwesomeNotifications().requestPermissionToSendNotifications();
@@ -82,12 +69,6 @@ class _AuthHandlerState extends State<AuthHandler> {
 
   @override
   void initState() {
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceive,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreate,
-      onDismissActionReceivedMethod: NotificationController.onNotificationDismiss,
-      onNotificationDisplayedMethod: NotificationController.onNotificationDisplay
-    );
     super.initState();
     _checkLoginStatus();
   }

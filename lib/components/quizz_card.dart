@@ -7,6 +7,7 @@ class QuizzCard extends StatefulWidget {
   final Function(String) onSelected;
   final double opacity;
 
+
   const QuizzCard({
     required this.title,
     required this.imagePath,

@@ -1,15 +1,16 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tipo_treino/screens/home_page.dart';
 import 'package:tipo_treino/screens/mymeds_page.dart';
 import '../screens/quizz_page.dart';
 import 'add_meds.dart';
+import '../screens/calendar_page.dart';
 
 class BottomAppBarCustom extends StatefulWidget {
   final int selectedIndex;
 
-  const BottomAppBarCustom({Key? key, required this.selectedIndex}) : super(key: key);
+  const BottomAppBarCustom({super.key, required this.selectedIndex});
 
   @override
   _BottomAppBarCustomState createState() => _BottomAppBarCustomState();
@@ -37,13 +38,13 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
         break;
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MedsPage()),
+          MaterialPageRoute(builder: (context) =>const MedsPage()),
         );
         break;
       case 2:
@@ -55,8 +56,8 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(height: 15),
-                Container(
+                const SizedBox(height: 15),
+                SizedBox(
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
@@ -64,14 +65,14 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                     icon: const Icon(Icons.sensor_occupied_sharp),
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => QuizPage()),
+                      MaterialPageRoute(builder: (context) => const QuizPage()),
                     ),
                     backgroundColor: Colors.white,
                   ),
                 ),
 
-                SizedBox(height: 20),
-                Container(
+                const SizedBox(height: 20),
+                SizedBox(
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
@@ -95,39 +96,33 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                   ),
                 ),
 
-                SizedBox(height: 15),
-                Container(
+                const SizedBox(height: 15),
+                SizedBox(
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
                     label: const Text('Add Habit'),
                     icon: const Icon(Icons.sports_handball_sharp),
                     onPressed: () {
-                      AwesomeNotifications().createNotification(
-                          content: NotificationContent(
-                              id: 1,
-                              channelKey: 'not_channel',
-                              title: 'Helloooooo',
-                              body: 'MAluco sao horas cde tomares as tuas drogas'
-                          ),
-
-                      );
                     },
                     backgroundColor: Colors.white,
                   ),
                 ),
 
-                SizedBox(height: 130),
+                const SizedBox(height: 130),
               ],
             );
           },
         );
         break;
       case 3:
-      // Navegação para a página de calendário
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CalendarPage()),
+        );
         break;
       case 4:
-      // Navegação para a página de SOS
+      // Navigation para a page de SOS
         break;
     }
   }
@@ -135,9 +130,9 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(2),
-      margin: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(2),
+      margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+      decoration: const BoxDecoration(
         color: Color(0xFFC77DFF),
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
@@ -173,11 +168,11 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
             icon: Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFF9D4EDD),
                 borderRadius: BorderRadius.all(Radius.circular(100)),
               ),
-              child: Icon(
+              child: const Icon(
                 CupertinoIcons.plus,
                 size: 40,
                 color: Colors.white,

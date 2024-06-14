@@ -1,0 +1,251 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
+import '../components/app_bar.dart';
+
+class CalendarPage extends StatefulWidget {
+  @override
+  _CalendarPageState createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  Map<String, List<Map<String, String>>> _events = {};
+  Map<String, List<String>> _medicationsTaken = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+
+      QuerySnapshot eventSnapshot = await FirebaseFirestore.instance
+          .collection('events')
+          .where('user_id', isEqualTo: user.uid)
+          .get();
+
+      Map<String, List<Map<String, String>>> events = {};
+      for (var doc in eventSnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String date = data['date'];
+        String event = data['event'];
+        if (!events.containsKey(date)) {
+          events[date] = [];
+        }
+        events[date]!.add({'Event': event});
+      }
+
+      QuerySnapshot medicationSnapshot = await FirebaseFirestore.instance
+          .collection('medications')
+          .where('user_id', isEqualTo: user.uid)
+          .get();
+
+      Map<String, List<String>> medicationsTaken = {};
+      for (var doc in medicationSnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        List<String> takenDates = List<String>.from(data['taken_dates'] ?? []);
+        String medicationName = data['name'];
+        for (String takenDate in takenDates) {
+          List<String> dateAndTime = takenDate.split(' ');
+          String dateKey = dateAndTime.first;
+          String timeAndStatus = dateAndTime.skip(1).join(' ');
+          String medicationInfo = '$medicationName - $timeAndStatus';
+
+          if (!medicationsTaken.containsKey(dateKey)) {
+            medicationsTaken[dateKey] = [];
+          }
+          medicationsTaken[dateKey]!.add(medicationInfo);
+        }
+      }
+
+      // Carregar eventos de ataque do Firestore
+      QuerySnapshot seizureSnapshot = await FirebaseFirestore.instance
+          .collection('seizureEvents')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      for (var doc in seizureSnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String date = data['date'];
+        String awareness = data['awareness'];
+        String bodySeizure = data['bodySeizure'];
+        String movement = data['movement'];
+        String jerkingMovement = data['jerkingMovement'];
+        String stiffness = data['stiffness'];
+        String eyes = data['eyes'];
+        String possibleTriggers = data['possibleTriggers'];
+
+        String formattedDate = date.split(' ').first;
+
+        Map<String, String> event = {
+          'Awareness': awareness,
+          'Body Seizure': bodySeizure,
+          'Movement': movement,
+          'Jerking Movement': jerkingMovement,
+          'Stiffness': stiffness,
+          'Eyes': eyes,
+          'Triggers': possibleTriggers
+        };
+
+        if (!events.containsKey(formattedDate)) {
+          events[formattedDate] = [];
+        }
+        events[formattedDate]!.add(event);
+      }
+
+      setState(() {
+        _events = events;
+        _medicationsTaken = medicationsTaken;
+        print(_events);
+      });
+    }
+  }
+
+  List<Map<String, String>> _getEventsForDay(DateTime day) {
+    String key = DateFormat('yyyy-MM-dd').format(day);
+    return _events[key] ?? [];
+  }
+
+  List<String> _getMedicationsForDay(DateTime day) {
+    String key = DateFormat('yyyy-MM-dd').format(day);
+    return _medicationsTaken[key] ?? [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8ECFF),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  borderRadius:  BorderRadius.circular(10),
+                ),
+                color: const Color(0x63DAAAFF).withOpacity(0.2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                child: TableCalendar(
+                  calendarStyle: CalendarStyle(
+                    outsideDaysVisible: false,
+                    defaultTextStyle: GoogleFonts.inter(
+                      fontSize: 16.0,
+                      color: Colors.grey[800],
+
+                    ),
+                    weekendTextStyle: GoogleFonts.inter(
+                      fontSize: 16.0,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  headerStyle: HeaderStyle(formatButtonVisible: false,
+                      titleCentered: true),
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: _focusedDay,
+                  calendarFormat: _calendarFormat,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                  },
+                  onFormatChanged: (format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  },
+                  onPageChanged: (focusedDay) {
+                    _focusedDay = focusedDay;
+                  },
+                  eventLoader: _getEventsForDay,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            if (_selectedDay != null) ...[
+              Container(
+                decoration: ShapeDecoration(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: const Color(0x63DAAAFF)
+                ),
+                child: const Padding(
+                  padding:  EdgeInsets.all(8.0),
+                  child: Text(
+                    'Eventos do dia :',
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              DataTable(
+                columns: const [
+                  DataColumn(label: Text('Tipo')),
+                  DataColumn(label: Text('Detalhes')),
+                ],
+                rows: _getEventsForDay(_selectedDay!).expand((event) {
+                  return event.entries.map((entry) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(entry.key)),
+                        DataCell(Text(entry.value)),
+                      ],
+
+                    );
+
+                  });
+                }).toList(),
+              ),
+              SizedBox(height: 20),
+              Container(
+                decoration: ShapeDecoration(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: const Color(0x63DAAAFF),
+                ),
+
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Medicamentos tomados:',
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              DataTable(
+                columns: const [
+                  DataColumn(label: Text('Medicamento')),
+                ],
+                rows: _getMedicationsForDay(_selectedDay!).map((medication) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(medication)),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+      bottomNavigationBar: const BottomAppBarCustom(selectedIndex: 3),
+    );
+  }
+}

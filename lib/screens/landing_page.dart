@@ -90,7 +90,7 @@ class _LandingPageState extends State<LandingPage> {
                                 ),
                                 child: Scaffold(
                                   backgroundColor: Colors.transparent,
-                                  body: SingleChildScrollView( // Adicionado SingleChildScrollView
+                                  body: SingleChildScrollView(
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [

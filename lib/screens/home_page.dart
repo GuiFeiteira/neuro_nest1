@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tipo_treino/components/moodOptionBar.dart';
 import 'package:tipo_treino/components/sleep.dart';
+import 'package:tipo_treino/screens/myProfile_page.dart';
 import '../components/app_bar.dart';
+import 'landing_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,7 +16,9 @@ class HomePage extends StatelessWidget {
     if (user != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
-        return userDoc['name'];
+        String fullName = userDoc['name'];
+        List<String> names = fullName.split(' ');
+        return names.isNotEmpty ? names[0] : fullName;
       }
     }
     return null;
@@ -22,34 +27,85 @@ class HomePage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Profile Settings"),
+        title: Center(child: Text("Profile Settings")),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.person),
-              title: Text(userName), // Display the user's name
-              subtitle: const Text("View/Edit Profile"),
+              title: Text(userName),
+              subtitle: const Text("View / Edit Profile"),
               onTap: () {
-                // TODO: Navigate to profile editing screen
+                Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => MyProfile()));
               },
             ),
+            Divider(),
             ListTile(
               leading: const Icon(Icons.language),
               title: const Text("Change Language"),
               onTap: () {
-                // TODO: Implement language selection logic
+                _showLanguageDialog(context);
               },
             ),
-            // Add more options as needed (e.g., logout, settings)
+            Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool('isLoggedIn', false);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LandingPage()),
+                      (Route<dynamic> route) => false,
+                );
+              },
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
+      ),
+    );
+  }
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Center(child: Text("Select Language")),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    //_changeLanguage(context, 'en');
+                    Navigator.of(context).pop();
+                  },
+                  child: Image.asset(
+                    'assets/english.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+                SizedBox(width: 20),
+                GestureDetector(
+                  onTap: () {
+                    //_changeLanguage(context, 'pt');
+                    Navigator.of(context).pop();
+                  },
+                  child: Image.asset(
+                    'assets/portuguese.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -62,6 +118,7 @@ class HomePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Container(
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -70,12 +127,12 @@ class HomePage extends StatelessWidget {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Welcome Back,",
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 20,
                               color: Colors.black87,
                             ),
                           ),
