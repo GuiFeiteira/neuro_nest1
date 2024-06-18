@@ -6,6 +6,7 @@ import 'package:tipo_treino/screens/mymeds_page.dart';
 import '../screens/quizz_page.dart';
 import 'add_meds.dart';
 import '../screens/calendar_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class BottomAppBarCustom extends StatefulWidget {
   final int selectedIndex;
@@ -61,7 +62,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
-                    label: const Text('Add Event'),
+                    label: Text(AppLocalizations.of(context)!.addevent),
                     icon: const Icon(Icons.sensor_occupied_sharp),
                     onPressed: () => Navigator.push(
                       context,
@@ -76,7 +77,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
-                    label: const Text('Add Medication'),
+                    label:Text(AppLocalizations.of(context)!.addmeds),
                     icon: const Icon(Icons.medication_outlined),
                     onPressed: () {
                       showModalBottomSheet<void>(
@@ -86,7 +87,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                         builder: (BuildContext context) {
                           return AddMedicationForm(
                             onSuccess: (medicationName, dosageFrequency) {
-                              print('Medication added $medicationName, ');
+                              //print('Medication added $medicationName, ');
                             },
                           );
                         },
@@ -101,7 +102,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                   width: 200.0,
                   height: 50.0,
                   child: FloatingActionButton.extended(
-                    label: const Text('Add Habit'),
+                    label:Text('Add Habit'),
                     icon: const Icon(Icons.sports_handball_sharp),
                     onPressed: () {
                     },

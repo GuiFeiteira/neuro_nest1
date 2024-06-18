@@ -8,6 +8,8 @@ class SeizureEvent {
   final String stiffness;
   final String eyes;
   final String possibleTriggers;
+  final String? duration;
+  final String? eventTime;
 
   SeizureEvent({
     required this.userId,
@@ -19,6 +21,8 @@ class SeizureEvent {
     required this.stiffness,
     required this.eyes,
     required this.possibleTriggers,
+    this.duration,
+    this.eventTime,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +36,8 @@ class SeizureEvent {
       'stiffness': stiffness,
       'eyes': eyes,
       'possibleTriggers': possibleTriggers,
+      'duration': duration,
+      'eventTime': eventTime,
     };
   }
 }

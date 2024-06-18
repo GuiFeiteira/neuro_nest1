@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tipo_treino/components/moodOptionBar.dart';
 import 'package:tipo_treino/components/sleep.dart';
 import 'package:tipo_treino/screens/myProfile_page.dart';
 import '../components/app_bar.dart';
+import '../components/localProvider.dart';
 import 'landing_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,36 +26,37 @@ class HomePage extends StatelessWidget {
     }
     return null;
   }
+
   void _showProfileDialog(BuildContext context, String userName) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Center(child: Text("Profile Settings")),
+        title: Center(child: Text(AppLocalizations.of(context)!.profileSets)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.person),
               title: Text(userName),
-              subtitle: const Text("View / Edit Profile"),
+              subtitle: Text(AppLocalizations.of(context)!.profileSets),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(
                         builder: (context) => MyProfile()));
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.language),
-              title: const Text("Change Language"),
+              title: Text(AppLocalizations.of(context)!.mudarLingua),
               onTap: () {
                 _showLanguageDialog(context);
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text("Logout"),
+              title: Text(AppLocalizations.of(context)!.logout),
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
                 SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -68,11 +72,12 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
   void _showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Center(child: Text("Select Language")),
+        title: Center(child: Text(AppLocalizations.of(context)!.selectlanguage)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -81,7 +86,7 @@ class HomePage extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    //_changeLanguage(context, 'en');
+                    _changeLanguage(context, const Locale('en'));
                     Navigator.of(context).pop();
                   },
                   child: Image.asset(
@@ -90,10 +95,10 @@ class HomePage extends StatelessWidget {
                     height: 50,
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    //_changeLanguage(context, 'pt');
+                    _changeLanguage(context, const Locale('pt'));
                     Navigator.of(context).pop();
                   },
                   child: Image.asset(
@@ -110,102 +115,91 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  void _changeLanguage(BuildContext context, Locale locale) {
+    final provider = Provider.of<LocaleProvider>(context, listen: false);
+    provider.setLocale(locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8ECFF),
+      backgroundColor: const Color(0xFFF8ECFF),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
-          child: Container(
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FutureBuilder<String?>(
-                  future: _getUserName(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Welcome Back,",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black87,
-                            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FutureBuilder<String?>(
+                future: _getUserName(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CircleAvatar(
+                          //backgroundImage: AssetImage('assets/profile_picture.png'),
+                          radius: 30,
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data == null) {
+                    return const Text('User not found');
+                  } else {
+                    String userName = snapshot.data!;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.welcomeback(userName),
+                          style: const TextStyle(
+                            fontSize: 22,
+                            color: Colors.black87,
                           ),
-                          CircleAvatar(
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              _showProfileDialog(context, snapshot.data!); // Show dialog if user data is available
+                            }
+                          },
+                          child: const CircleAvatar(
                             //backgroundImage: AssetImage('assets/profile_picture.png'),
                             radius: 30,
                           ),
-                        ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data == null) {
-                      return Text('User not found');
-                    } else {
-                      String userName = snapshot.data!;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "Welcome Back, $userName",
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.black87,
-
-                            ),
-                          ),
-                    GestureDetector(
-                    onTap: () {
-                      if (snapshot.hasData && snapshot.data != null) {
-                          _showProfileDialog(context, snapshot.data!); // Show dialog if user data is available
-                        }
-                    },
-                          child: CircleAvatar(
-                            //backgroundImage: AssetImage('assets/profile_picture.png'),
-                            radius: 30,
-                          ),
-                    ),
-                        ],
-                      );
-                    }
-                  },
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.all(7.0),
+                child: Text(
+                    AppLocalizations.of(context)!.sleepoption
                 ),
-                SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.all(7.0),
-                  child: Text(
-                    "How did you sleep today ?",
-
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
+              ),
+              SleepOptionBar(),
+              const SizedBox(height: 18),
+              Padding(
+                padding: EdgeInsets.all(7.0),
+                child: Text(
+                  AppLocalizations.of(context)!.howufell,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
                   ),
                 ),
-                SleepOptionBar(),
-                SizedBox(height: 18),
-                Padding(
-                  padding: const EdgeInsets.all(7.0),
-                  child: Text(
-                    "Como te sentes hoje?",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                MoodOptionBar()
-              ],
-            ),
+              ),
+              MoodOptionBar()
+            ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBarCustom(selectedIndex: 0,), // Use const for static widgets
+      bottomNavigationBar: const BottomAppBarCustom(selectedIndex: 0),
     );
   }
 }

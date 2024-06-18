@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class MoodOptionBar extends StatefulWidget {
   @override
@@ -18,15 +19,32 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
     'assets/angry.png',
     'assets/sad.png',
   ];
-  final List<String> moodDescriptions = [
-    'Feliz', 'Bom', 'Normal','Stressado', 'Triste', 'Zangado', 'Muito Triste'
-  ];
+
   String? _selectedMood;
   String? _selectedDescription;
   String? _selectedImagePath;
 
   @override
+  void initState() {
+    super.initState();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _selectedMood = AppLocalizations.of(context)!.happy;
+    _selectedDescription = AppLocalizations.of(context)!.happy;
+    _selectedImagePath = imagePaths[0];
+    final List<String> moodDescriptions = [
+      AppLocalizations.of(context)!.happy,
+      AppLocalizations.of(context)!.good,
+      AppLocalizations.of(context)!.normal,
+      AppLocalizations.of(context)!.stressed,
+      AppLocalizations.of(context)!.littleSad,
+      AppLocalizations.of(context)!.angry,
+      AppLocalizations.of(context)!.verySad,
+    ];
+
     return Container(
       height: 80,
       decoration: BoxDecoration(
@@ -37,41 +55,49 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          DropdownButton<String>(
-            value: _selectedMood,
-            items: List.generate(imagePaths.length, (index) {
-              return DropdownMenuItem<String>(
-                value: moodDescriptions[index],
-                child: Row(
-                  children: [
-                    SizedBox(width: 8),
-                    Image.asset(
-                      imagePaths[index],
-                      width: 27,
-                      height: 27,
-                    ),
-                    SizedBox(width: 18),
-                    Text(moodDescriptions[index]),
-                  ],
-                ),
-              );
-            }),
-            onChanged: (value) {
-              setState(() {
-                _selectedMood = value;
-                int selectedIndex = moodDescriptions.indexOf(value!);
-                _selectedDescription = moodDescriptions[selectedIndex];
-                _selectedImagePath = imagePaths[selectedIndex];
-              });
-            },
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: DropdownButton<String>(
+              value: _selectedMood,
+              items: List.generate(imagePaths.length, (index) {
+                return DropdownMenuItem<String>(
+                  value: moodDescriptions[index],
+                  child: Row(
+                    children: [
+                      SizedBox(width: 10),
+                      Image.asset(
+                        imagePaths[index],
+                        width: 27,
+                        height: 27,
+                      ),
+                      SizedBox(width: 18),
+                      Text(moodDescriptions[index]),
+                    ],
+                  ),
+                );
+              }),
+              onChanged: (value) {
+                setState(() {
+                  _selectedMood = value;
+                  int selectedIndex = moodDescriptions.indexOf(value!);
+                  _selectedDescription = moodDescriptions[selectedIndex];
+                  _selectedImagePath = imagePaths[selectedIndex];
+                });
+              },
+            ),
           ),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-
-            ) ,
-            onPressed: _selectedMood == null ? null : _saveMood,
-            child: Text("Salvar"),
+          Padding(
+            padding: const EdgeInsets.only(right: 18.0),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              onPressed: _saveMood,
+              child: Text(AppLocalizations.of(context)!.save),
+            ),
           ),
         ],
       ),
@@ -94,7 +120,7 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
         'time': time,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Humor salvo com sucesso!')));
+
     }
   }
 }

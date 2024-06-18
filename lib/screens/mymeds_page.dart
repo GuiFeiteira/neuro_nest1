@@ -5,10 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:bottom_picker/bottom_picker.dart';
-
 import '../components/anim_butt.dart';
 import '../components/app_bar.dart';
 import '../components/models/medication.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class MedsPage extends StatefulWidget {
   const MedsPage({Key? key}) : super(key: key);
@@ -36,15 +36,10 @@ class _MedsPageState extends State<MedsPage> {
           .where('user_id', isEqualTo: user.uid)
           .get();
 
-      print('User ID: ${user.uid}');
-      print('Fetched ${snapshot.docs.length} medications');
-
       List<Medication> allMedications = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print('Medication Data: $data');
         List<String> times = List<String>.from(data['times']);
         List<String> days = List<String>.from(data['days']);
-        print('Times: $times, Days: $days');
         return times.map((time) => Medication(
           name: data['name'],
           time: time,
@@ -53,7 +48,7 @@ class _MedsPageState extends State<MedsPage> {
           id: doc.id,
         )).toList();
       }).expand((element) => element).toList();
-      print('All Medications: $allMedications');
+
 
       _filterAndSortMedications(allMedications);
     }
@@ -67,24 +62,23 @@ class _MedsPageState extends State<MedsPage> {
     DateTime now = DateTime.now();
     String currentDay = _normalizeDay(DateFormat('EEEE').format(now));
     DateFormat timeFormat = DateFormat('HH:mm');
-    print('Current Day: $currentDay');
+
 
     List<Medication> todayMeds = medications.where((med) {
-      print('Checking medication: ${med.name}, Days: ${med.days}');
+
       return med.days.map(_normalizeDay).contains(currentDay);
     }).toList();
-    print('Today Medications: $todayMeds');
+
 
     todayMeds.sort((a, b) => timeFormat.parse(a.time).compareTo(timeFormat.parse(b.time)));
-    print('Sorted Today Medications: $todayMeds');
 
     nextMedications = todayMeds.where((med) {
       DateTime medTime = timeFormat.parse(med.time);
       bool isNext = !med.isTaken && (medTime.hour > now.hour || (medTime.hour == now.hour && medTime.minute > now.minute));
-      print('Medication: ${med.name}, Time: ${med.time}, Is Next: $isNext');
+
       return isNext;
     }).take(3).toList();
-    print('Next Medications: $nextMedications');
+
 
     todayMedications = todayMeds;
 
@@ -132,7 +126,7 @@ class _MedsPageState extends State<MedsPage> {
       pickerTitle: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          'Qual o horário de toma?',
+          AppLocalizations.of(context)!.meddstime,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -221,10 +215,10 @@ class _MedsPageState extends State<MedsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
+                   Padding(
                     padding: EdgeInsets.only(top: 18.0),
                     child: Text(
-                      "Next On:",
+                      AppLocalizations.of(context)!.proximos,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -240,7 +234,6 @@ class _MedsPageState extends State<MedsPage> {
                       itemCount: nextMedications.length,
                       itemBuilder: (context, index) {
                         final medication = nextMedications[index];
-                        print('Next Medication: $medication');
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12.0),
                           child: Row(
@@ -285,10 +278,10 @@ class _MedsPageState extends State<MedsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
+                     Padding(
                       padding: EdgeInsets.only(top: 18.0),
                       child: Text(
-                        "Today's Medications:",
+                       AppLocalizations.of(context)!.medstoday,
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 18,
@@ -303,7 +296,6 @@ class _MedsPageState extends State<MedsPage> {
                         itemCount: todayMedications.length,
                         itemBuilder: (context, index) {
                           final medication = todayMedications[index];
-                          print('Today Medication: $medication');
                           return GestureDetector(
                             onTap: () {
                               _toggleMedicationTaken(medication);
@@ -336,13 +328,13 @@ class _MedsPageState extends State<MedsPage> {
                                   },
                                   itemBuilder: (BuildContext context) {
                                     return [
-                                      const PopupMenuItem<String>(
+                                      PopupMenuItem<String>(
                                         value: 'Different Timing',
-                                        child: Text('Different Timing'),
+                                        child: Text(AppLocalizations.of(context)!.diferentiming),
                                       ),
-                                      const PopupMenuItem<String>(
+                                      PopupMenuItem<String>(
                                         value: 'Skipped',
-                                        child: Text('Skipped'),
+                                        child: Text(AppLocalizations.of(context)!.skipped),
                                       ),
                                     ];
                                   },

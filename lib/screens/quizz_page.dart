@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/aditionalEventquestions.dart';
 import '../components/models/seizure.dart';
 import '../components/quizz_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+
 
 class QuizPage extends StatefulWidget {
   const QuizPage({Key? key}) : super(key: key);
@@ -28,53 +30,53 @@ class _QuizPageState extends State<QuizPage> {
 
     cardSets = [
       [
-        {"title": "Fully Aware", "imagePath": "assets/fully aware.png"},
-        {"title": "Confused", "imagePath": "assets/confused.png"},
-        {"title": "Responds to Voice", "imagePath": "assets/Responds_voice.png"},
-        {"title": "Not Responsive", "imagePath": "assets/not responsive.png"},
+        {"title": "fullyAware", "imagePath": "assets/fully aware.png"},
+        {"title": "confused", "imagePath": "assets/confused.png"},
+        {"title": "respondsToVoice", "imagePath": "assets/Responds_voice.png"},
+        {"title": "notResponsive", "imagePath": "assets/not responsive.png"},
       ],
       [
-        {"title": "Full Body", "imagePath": "assets/full body.png"},
-        {"title": "Just Right Side", "imagePath": "assets/right.png"},
-        {"title": "Just Left Side", "imagePath": "assets/left.png"},
-        {"title": "Can’t Tell / Other", "imagePath": "assets/question.png"},
+        {"title": "fullBody", "imagePath": "assets/full body.png"},
+        {"title": "justRightSide", "imagePath": "assets/right.png"},
+        {"title": "justLeftSide", "imagePath": "assets/left.png"},
+        {"title": "cantTellOther", "imagePath": "assets/question.png"},
       ],
       [
-        {"title": "Jerking", "imagePath": "assets/jerking.png"},
-        {"title": "Stiffness", "imagePath": "assets/Stiffness.png"},
-        {"title": "Both", "imagePath": "assets/both.png"},
-        {"title": "Can’t Tell / Other", "imagePath": "assets/question.png"},
+        {"title": "jerking", "imagePath": "assets/jerking.png"},
+        {"title": "stiffness", "imagePath": "assets/Stiffness.png"},
+        {"title": "both", "imagePath": "assets/both.png"},
+        {"title": "cantTellOther", "imagePath": "assets/question.png"},
       ],
       [
-        {"title": "All body Jerking", "imagePath": "assets/AllBodyJerking.png"},
-        {"title": "Legs Jerking", "imagePath": "assets/cramp.png"},
-        {"title": "Arm Jerking", "imagePath": "assets/ArmJerking.png"},
-        {"title": "Can’t Tell / Other", "imagePath": "assets/question.png"},
+        {"title": "allBodyJerking", "imagePath": "assets/AllBodyJerking.png"},
+        {"title": "legsJerking", "imagePath": "assets/cramp.png"},
+        {"title": "armJerking", "imagePath": "assets/ArmJerking.png"},
+        {"title": "cantTellOther", "imagePath": "assets/question.png"},
       ],
       [
-        {"title": "All Body Stiffness", "imagePath": "assets/allBodyStiff.png"},
-        {"title": "Legs Stiffness", "imagePath": "assets/legsStiff.png"},
-        {"title": "Arm Stiffness", "imagePath": "assets/ArmStifenees.png"},
-        {"title": "Can’t Tell / Other", "imagePath": "assets/question.png"},
+        {"title": "allBodyStiffness", "imagePath": "assets/allBodyStiff.png"},
+        {"title": "legsStiffness", "imagePath": "assets/legsStiff.png"},
+        {"title": "armStiffness", "imagePath": "assets/ArmStifenees.png"},
+        {"title": "cantTellOther", "imagePath": "assets/question.png"},
       ],
       [
-        {"title": "Staring", "imagePath": "assets/Eyes.png"},
-        {"title": "Eyes up", "imagePath": "assets/eyes up.png"},
-        {"title": "Eyes down", "imagePath": "assets/eyes down.png"},
-        {"title": "Eyes Rolling", "imagePath": "assets/eyes rolling.png"},
+        {"title": "staring", "imagePath": "assets/Eyes.png"},
+        {"title": "eyesUp", "imagePath": "assets/eyes up.png"},
+        {"title": "eyesDown", "imagePath": "assets/eyes down.png"},
+        {"title": "Yeys ROlling", "imagePath": "assets/eyes rolling.png"},
       ],
     ];
 
     cardTitles = [
-      "Awareness",
-      "Body seizure",
-      "Movements",
-      "Jerking Movements",
-      "Stiffness",
-      "Eyes"
+      "awareness",
+      "bodySeizure",
+      "movements",
+      "jerkingMovements",
+      "stiffness",
+      "eyes"
     ];
 
-    selections = []; // Iniciar como uma lista dinâmica
+    selections = [];
   }
 
   @override
@@ -134,7 +136,7 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                     onPressed: previous,
                     child: Text(
-                      'Back',
+                      AppLocalizations.of(context)!.back,
                       style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -147,7 +149,7 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                     onPressed: next,
                     child: Text(
-                      'Next',
+                      AppLocalizations.of(context)!.next,
                       style: TextStyle(color: Colors.black54),
                     ),
                   ),
@@ -189,6 +191,8 @@ class _QuizPageState extends State<QuizPage> {
         if (additionalQuestions != null) {
           selections = additionalQuestions;
           await saveSeizureEventToFirestore();
+          print(selections);
+
           Navigator.pop(context);
         }
       }
@@ -217,7 +221,9 @@ class _QuizPageState extends State<QuizPage> {
         jerkingMovement: selections[3],
         stiffness: selections[4],
         eyes: selections[5],
-        possibleTriggers: selections.sublist(6).join(', '),
+        possibleTriggers: selections.sublist(8).join(', '),
+        duration: selections[6],
+        eventTime: selections[7],
       );
 
       await FirebaseFirestore.instance.collection('seizureEvents').add(seizureEvent.toMap());

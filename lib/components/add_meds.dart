@@ -6,9 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'notifications/notification_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class AddMedicationForm extends StatefulWidget {
-  final Function(String, String) onSuccess; // Callback for successful addition
+  final Function(String, String) onSuccess;
 
   const AddMedicationForm({Key? key, required this.onSuccess}) : super(key: key);
 
@@ -19,8 +20,14 @@ class AddMedicationForm extends StatefulWidget {
 class _AddMedicationFormState extends State<AddMedicationForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _frequencyOptions = ['Diariamente', 'Alguns Dias da Semana', 'As Needed'];
-  final _timesPerDayOptions = ['Uma vez', 'Duas Vezes ao Dia', 'Três Vezes ao Dia'];
+  final _frequencyOptions = {
+    'pt':['Diariamente', 'Alguns Dias da Semana', 'As Needed'],
+    'en':['Daily', 'A Few Days of the Week', 'As Needed']
+  };
+  final _timesPerDayOptions = {
+    'pt': ['Uma vez', 'Duas Vezes ao Dia', 'Três Vezes ao Dia'],
+    'en':['Once', 'Twice a Day', 'Three Times a Day']
+  };
   String? _selectedFrequency;
   String? _selectedTimesPerDay;
   List<String> _selectedDays = [];
@@ -93,7 +100,6 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
             }
           }
         } else {
-          // Handle user not logged in
           print('User is not logged in');
         }
       } catch (e) {
@@ -116,7 +122,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
       pickerTitle: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          'Qual o horário de toma?',
+          AppLocalizations.of(context)!.horariotoma,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -138,9 +144,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
 
   void _updateTimeControllers() {
     int requiredControllers = 1;
-    if (_selectedTimesPerDay == 'Duas Vezes ao Dia') {
+    if (_selectedTimesPerDay == 'Duas Vezes ao Dia' || _selectedTimesPerDay == 'Twice a Day') {
       requiredControllers = 2;
-    } else if (_selectedTimesPerDay == 'Três Vezes ao Dia') {
+    } else if (_selectedTimesPerDay == 'Três Vezes ao Dia' || _selectedTimesPerDay == 'Three Times a Day') {
       requiredControllers = 3;
     }
 
@@ -154,10 +160,14 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
   }
 
   Widget _buildDaysOfWeekSelector() {
-    final daysOfWeek = ['Sunday ', 'Monday', 'Tuesday ', 'Wednesday ', 'Thursday ', 'Friday ', 'Saturday ' ];
+    final daysOfWeek = {
+      'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      'pt': ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+    };
+
     return Wrap(
       spacing: 5.0,
-      children: daysOfWeek.map((day) {
+      children: daysOfWeek[AppLocalizations.of(context)!.localeName]!.map((day) {
         final isSelected = _selectedDays.contains(day);
         return ChoiceChip(
           label: Text(day),
@@ -189,7 +199,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                 padding: const EdgeInsets.only(left: 30, right: 30, top: 45),
                 child: TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Nome do Medicamento'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.nomemeds),
                   onChanged: (value) => _filterMedications(value),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -204,7 +214,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                 child: _filteredMedications.isEmpty
                     ? Text('')
                     : ListView.builder(
-                  shrinkWrap: true, // Prevent list from expanding
+                  shrinkWrap: true,
                   itemCount: _filteredMedications.length,
                   itemBuilder: (context, index) {
                     if (index < 3) {
@@ -230,9 +240,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                 padding: const EdgeInsets.all(30.0),
                 child: DropdownButtonFormField<String>(
                   value: _selectedFrequency,
-                  hint: Text('Frequência'),
-                  items: _frequencyOptions
-                      .map((value) => DropdownMenuItem(child: Text(value), value: value))
+                  hint: Text('o'),//AppLocalizations.of(context)!.frequencia),
+                  items: _frequencyOptions[AppLocalizations.of(context)!.localeName]
+                      !.map((value) => DropdownMenuItem(child: Text(value), value: value))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -248,13 +258,13 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                   },
                 ),
               ),
-              if (_selectedFrequency == 'Alguns Dias da Semana')
+              if (_selectedFrequency == 'Alguns Dias da Semana' || _selectedFrequency == "A Few Days of the Week")
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Selecione os dias da semana:'),
+                      Text(AppLocalizations.of(context)!.diassemana),
                       _buildDaysOfWeekSelector(),
                     ],
                   ),
@@ -264,9 +274,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                   padding: const EdgeInsets.all(30.0),
                   child: DropdownButtonFormField<String>(
                     value: _selectedTimesPerDay,
-                    hint: Text('Quantas vezes ao dia?'),
-                    items: _timesPerDayOptions
-                        .map((value) => DropdownMenuItem(child: Text(value), value: value))
+                    hint: Text(AppLocalizations.of(context)!.timesaday),
+                    items: _timesPerDayOptions[AppLocalizations.of(context)!.localeName]
+                        !.map((value) => DropdownMenuItem(child: Text(value), value: value))
                         .toList(),
                     onChanged: (value) {
                       setState(() {
@@ -326,7 +336,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                         });
                       },
                     ),
-                    Text('Notificar'),
+                    Text(AppLocalizations.of(context)!.notificar),
                   ],
                 ),
               ),
@@ -334,7 +344,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                 padding: const EdgeInsets.only(bottom: 18.0),
                 child: ElevatedButton(
                   onPressed: _submitMedication,
-                  child: Text('Adicionar Medicamento'),
+                  child: Text(AppLocalizations.of(context)!.addmeds),
                 ),
               ),
             ],

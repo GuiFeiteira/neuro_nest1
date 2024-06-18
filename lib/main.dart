@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tipo_treino/l10n/l10n.dart';
+import 'components/localProvider.dart';
 import 'screens/home_page.dart';
 import 'screens/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +9,8 @@ import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import './components/notifications/notification_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,25 +21,35 @@ void main() async {
   await NotificationController.initializeNotifications();
 
   bool allowSentNotifications = await AwesomeNotifications().isNotificationAllowed();
-  if( !allowSentNotifications){
+  if (!allowSentNotifications) {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
-  runApp(const MyApp());
+
+  final localeProvider = LocaleProvider();
+  await localeProvider.loadLocale();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => localeProvider,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+
     return MaterialApp(
       title: 'The Flutter Way',
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFEEF1F8),
+        scaffoldBackgroundColor: const Color(0xFFEEF1F8),
         primarySwatch: Colors.blue,
         fontFamily: "Intel",
-        inputDecorationTheme: InputDecorationTheme(
+        inputDecorationTheme: const InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
           errorStyle: TextStyle(height: 0),
@@ -44,6 +59,14 @@ class MyApp extends StatelessWidget {
           errorBorder: defaultInputBorder,
         ),
       ),
+      supportedLocales: L10n.all,
+      locale: localeProvider.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       home: const AuthHandler(),
     );
   }
@@ -56,7 +79,6 @@ const defaultInputBorder = OutlineInputBorder(
     width: 1,
   ),
 );
-
 class AuthHandler extends StatefulWidget {
   const AuthHandler({Key? key}) : super(key: key);
 

@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import '../components/app_bar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -186,30 +186,37 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                   color: const Color(0x63DAAAFF)
                 ),
-                child: const Padding(
+                child: Padding(
                   padding:  EdgeInsets.all(8.0),
                   child: Text(
-                    'Eventos do dia :',
+                    AppLocalizations.of(context)?.eventosdia ?? 'Eventos do dia:',
                     style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              DataTable(
-                columns: const [
-                  DataColumn(label: Text('Tipo')),
-                  DataColumn(label: Text('Detalhes')),
-                ],
-                rows: _getEventsForDay(_selectedDay!).expand((event) {
-                  return event.entries.map((entry) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(entry.key)),
-                        DataCell(Text(entry.value)),
-                      ],
-
-                    );
-
-                  });
+              Column(
+                children: _getEventsForDay(_selectedDay!).map((event) {
+                  return Column(
+                    children: [
+                      DataTable(
+                        columns:  [
+                          DataColumn(label: Text(AppLocalizations.of(context)!.tipo)),
+                          DataColumn(label: Text(AppLocalizations.of(context)!.detalhes)),
+                        ],
+                        rows: event.entries.map((entry) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Text(entry.key)),
+                              DataCell(Text(entry.value)),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                      Divider(
+                        color: Colors.deepPurple,
+                      ),
+                    ],
+                  );
                 }).toList(),
               ),
               SizedBox(height: 20),
@@ -221,17 +228,17 @@ class _CalendarPageState extends State<CalendarPage> {
                   color: const Color(0x63DAAAFF),
                 ),
 
-                child: const Padding(
+                child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    'Medicamentos tomados:',
+                    AppLocalizations.of(context)!.medicamentosdia,
                     style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               DataTable(
-                columns: const [
-                  DataColumn(label: Text('Medicamento')),
+                columns: [
+                  DataColumn(label: Text(AppLocalizations.of(context)!.medicamento)),
                 ],
                 rows: _getMedicationsForDay(_selectedDay!).map((medication) {
                   return DataRow(
