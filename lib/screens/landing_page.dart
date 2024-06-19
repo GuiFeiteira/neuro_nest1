@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:sign_button/sign_button.dart';
 import 'package:tipo_treino/components/signUp_form.dart';
-import 'package:tipo_treino/screens/quizz_page.dart';
 import '../components/anim_butt.dart';
 import '../components/signIn_form.dart';
 import 'package:flutter/material.dart';
@@ -134,9 +133,7 @@ class _LandingPageState extends State<LandingPage> {
                                                 buttonSize: ButtonSize.medium,
                                                 buttonType: ButtonType.facebook,
                                                 onPressed: () {
-                                                  Navigator.push(context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => QuizPage()));
+
                                                 },
                                               ),
                                               SignInButton.mini(

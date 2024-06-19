@@ -6,7 +6,7 @@ class NotificationController {
 
   static Future<void> initializeNotifications() async {
     await AwesomeNotifications().initialize(
-      null, // Nome do ícone de notificação
+      null,
       [
         NotificationChannel(
           channelKey: 'basic_channel',

@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tipo_treino/l10n/l10n.dart';
+import 'package:tipo_treino/screens/sos_page.dart';
 import 'components/localProvider.dart';
 import 'screens/home_page.dart';
 import 'screens/landing_page.dart';
@@ -11,6 +15,10 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import './components/notifications/notification_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:shake/shake.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +33,8 @@ void main() async {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
+  await initializeService();
+
   final localeProvider = LocaleProvider();
   await localeProvider.loadLocale();
 
@@ -34,6 +44,74 @@ void main() async {
       child: const MyApp(),
     ),
   );
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      isForegroundMode: true,
+      autoStart: true,
+      autoStartOnBoot: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      onForeground: onStart,
+      onBackground: onIosBackground,
+    ),
+  );
+}
+
+void onStart(ServiceInstance service) {
+  ShakeDetector detector = ShakeDetector.autoStart(
+    onPhoneShake: () {
+      service.invoke('sendSOS');
+    },
+  );
+
+  service.on('sendSOS').listen((event) {
+    sendEmergencyMessage2();
+  });
+
+  service.on('stopService').listen((event) {
+    service.stopSelf();
+  });
+}
+
+Future<bool> onIosBackground(ServiceInstance service) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  return true;
+}
+
+Future<void> sendEmergencyMessage2() async {
+  final status = await Permission.sms.status;
+  if (!status.isGranted) {
+    final result = await Permission.sms.request();
+    if (!result.isGranted) {
+      print('SMS permission denied');
+      return;
+    }
+  }
+
+  // Obter contatos de emergência do Firebase e enviar SMS
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('emergencyContacts')
+        .get();
+    for (var doc in snapshot.docs) {
+      final contact = EmergencyContact.fromMap(doc.data());
+      final uri = Uri(
+        scheme: 'sms',
+        path: contact.phoneNumber,
+        queryParameters: {'body': 'Emergency! Please help!'},
+      );
+      await launchUrl(uri);
+    }
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -79,6 +157,7 @@ const defaultInputBorder = OutlineInputBorder(
     width: 1,
   ),
 );
+
 class AuthHandler extends StatefulWidget {
   const AuthHandler({Key? key}) : super(key: key);
 

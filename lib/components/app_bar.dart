@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tipo_treino/screens/home_page.dart';
 import 'package:tipo_treino/screens/mymeds_page.dart';
+import 'package:tipo_treino/screens/sos_page.dart';
 import '../screens/quizz_page.dart';
 import 'add_meds.dart';
 import '../screens/calendar_page.dart';
@@ -123,7 +124,10 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
         );
         break;
       case 4:
-      // Navigation para a page de SOS
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EmergencyContactsPage()),
+        );
         break;
     }
   }
@@ -132,7 +136,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(2),
-      margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
       decoration: const BoxDecoration(
         color: Color(0xFFC77DFF),
         borderRadius: BorderRadius.all(Radius.circular(20)),
