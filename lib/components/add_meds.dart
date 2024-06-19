@@ -240,7 +240,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
                 padding: const EdgeInsets.all(30.0),
                 child: DropdownButtonFormField<String>(
                   value: _selectedFrequency,
-                  hint: Text('o'),//AppLocalizations.of(context)!.frequencia),
+                  hint: Text(AppLocalizations.of(context)!.frequencia),
                   items: _frequencyOptions[AppLocalizations.of(context)!.localeName]
                       !.map((value) => DropdownMenuItem(child: Text(value), value: value))
                       .toList(),

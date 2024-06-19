@@ -40,7 +40,12 @@
   "nomemeds": "Nome do Medicamento",
   "next": "Proximo",
   "back": "Anterior",
-  "frequencia": "Frequência"
+  "frequencia": "Frequência",
+  "sendEmergencyMessage": "Enviar Mensagem de Emergencia",
+  "addContact": "Adicionar Contacto",
+  "phoneNumber": "Numero de Telfone",
+  "name": "Nome",
+  "countryCode": "Codigo Pais"
 
 
 }
