@@ -118,7 +118,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
   void _showTimePicker(int index) {
     BottomPicker.time(
       displayCloseIcon: false,
-      pickerTextStyle: TextStyle(fontSize: 18),
+      pickerTextStyle: TextStyle(fontSize: 18,
+      color: Colors.black),
+
       pickerTitle: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
@@ -159,6 +161,23 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
     }
   }
 
+  final Map<String, String> _dayAbbreviationToFullName = {
+    'Sun': 'Sunday',
+    'Mon': 'Monday',
+    'Tue': 'Tuesday',
+    'Wed': 'Wednesday',
+    'Thu': 'Thursday',
+    'Fri': 'Friday',
+    'Sat': 'Saturday',
+    'Dom': 'Sunday',
+    'Seg': 'Monday',
+    'Ter': 'Tuesday',
+    'Qua': 'Wednesday',
+    'Qui': 'Thursday',
+    'Sex': 'Friday',
+    'Sab': 'Saturday',
+  };
+
   Widget _buildDaysOfWeekSelector() {
     final daysOfWeek = {
       'en': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -168,16 +187,17 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
     return Wrap(
       spacing: 5.0,
       children: daysOfWeek[AppLocalizations.of(context)!.localeName]!.map((day) {
-        final isSelected = _selectedDays.contains(day);
+        final fullDayName = _dayAbbreviationToFullName[day]!;
+        final isSelected = _selectedDays.contains(fullDayName);
         return ChoiceChip(
           label: Text(day),
           selected: isSelected,
           onSelected: (selected) {
             setState(() {
               if (selected) {
-                _selectedDays.add(day);
+                _selectedDays.add(fullDayName);
               } else {
-                _selectedDays.remove(day);
+                _selectedDays.remove(fullDayName);
               }
             });
           },

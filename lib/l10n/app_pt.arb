@@ -1,5 +1,5 @@
 {
-  "howufell": "Como te sentes ?",
+  "howufell": "Como se sente ?",
   "logout": "Sair",
   "meddstime": "Qual o horário de toma ?",
   "medstoday": "Medicamentos de hoje :",
@@ -18,7 +18,7 @@
   "diferentiming": "Tempo Diferente",
   "skipped": "Não Tomado",
   "analises": "Análises e insights",
-  "ataquesmes": "Ataques por mês :",
+  "ataquesmes": "Ataques deste mês :",
   "ataquessemana": "Ataques por semana :",
   "happy": "Feliz",
   "good": "Bom",
@@ -43,9 +43,21 @@
   "frequencia": "Frequência",
   "sendEmergencyMessage": "Enviar Mensagem de Emergencia",
   "addContact": "Adicionar Contacto",
-  "phoneNumber": "Numero de Telfone",
+  "phoneNumber": "Numero de Telefone",
   "name": "Nome",
-  "countryCode": "Codigo Pais"
-
-
+  "countryCode": "Codigo Pais",
+  "trends": " Dados insuficientes para comparar tendências.",
+  "trigger": "Informação :",
+  "occurrences": "Ocorrências",
+  "trigger2": "Gatilho",
+  "nourls": "nourls",
+  "learning": "Aprender",
+  "documentTitle": "Titulo do Documento",
+  "ataque": "Ataques",
+  "trends2": "Tendências",
+  "increased": "aumentaram",
+  "decreased": "diminuíram",
+  "stayedTheSame": "permaneceram os mesmos",
+  "comparedToLastMonth": "Comparado ao mês passado,",
+  "seizureByHour": "Ataques Por Hora"
 }

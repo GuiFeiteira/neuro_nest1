@@ -12,7 +12,9 @@ import 'landing_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class HomePage extends StatelessWidget {
+
   const HomePage({Key? key}) : super(key: key);
+
 
   Future<String?> _getUserName() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -38,7 +40,7 @@ class HomePage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person),
               title: Text(userName),
-              subtitle: Text(AppLocalizations.of(context)!.profileSets),
+              subtitle: Text(AppLocalizations.of(context)!.analises),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(

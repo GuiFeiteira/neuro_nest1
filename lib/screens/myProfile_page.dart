@@ -27,33 +27,33 @@ class _MyProfileState extends State<MyProfile> {
     _fetchData();
   }
 
-Future<void> _fetchData() async {
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    QuerySnapshot seizureSnapshot = await FirebaseFirestore.instance
-        .collection('seizureEvents')
-        .where('userId', isEqualTo: user.uid)
-        .get();
+  Future<void> _fetchData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot seizureSnapshot = await FirebaseFirestore.instance
+          .collection('seizureEvents')
+          .where('userId', isEqualTo: user.uid)
+          .get();
 
-    List<SeizureData> data = seizureSnapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      DateTime date = DateFormat('yyyy-MM-dd – HH:mm').parse(data['date']);
-      List<String> triggers = data['possibleTriggers'].split(', ');
-      String eventTime = data['eventTime'];
+      List<SeizureData> data = seizureSnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        DateTime date = DateFormat('yyyy-MM-dd – HH:mm').parse(data['date']);
+        List<String> triggers = data['possibleTriggers'].split(', ');
+        String eventTime = data['eventTime'];
 
 
-      return SeizureData(date: date, frequency: 1, triggers: triggers, eventTime: eventTime,);
-    }).toList();
+        return SeizureData(date: date, frequency: 1, triggers: triggers, eventTime: eventTime,);
+      }).toList();
 
-    setState(() {
-      _seizureData = data;
-      _calculateMonthlyAndWeeklyCounts();
-      _calculateTriggerCounts();
-      _calculateHourlyCounts();
-      _isLoading = false;
-    });
+      setState(() {
+        _seizureData = data;
+        _calculateMonthlyAndWeeklyCounts();
+        _calculateTriggerCounts();
+        _calculateHourlyCounts();
+        _isLoading = false;
+      });
+    }
   }
-}
   void _calculateHourlyCounts() {
     Map<String, int> hourlyCounts = {};
 
@@ -69,38 +69,38 @@ Future<void> _fetchData() async {
     _hourlyCounts = Map.fromEntries(sortedEntries);
 
   }
-void _calculateMonthlyAndWeeklyCounts() {
-  _monthlyCounts.clear();
-  _weeklyCounts.clear();
+  void _calculateMonthlyAndWeeklyCounts() {
+    _monthlyCounts.clear();
+    _weeklyCounts.clear();
 
-  for (var data in _seizureData) {
-    String monthKey = DateFormat('yyyy-MM').format(data.date);
-    String weekKey = DateFormat('yyyy-ww').format(data.date);
+    for (var data in _seizureData) {
+      String monthKey = DateFormat('yyyy-MM').format(data.date);
+      String weekKey = DateFormat('yyyy-ww').format(data.date);
 
-    if (!_monthlyCounts.containsKey(monthKey)) {
-      _monthlyCounts[monthKey] = 0;
-    }
-    _monthlyCounts[monthKey] = _monthlyCounts[monthKey]! + data.frequency;
-
-    if (!_weeklyCounts.containsKey(weekKey)) {
-      _weeklyCounts[weekKey] = 0;
-    }
-    _weeklyCounts[weekKey] = _weeklyCounts[weekKey]! + data.frequency;
-  }
-}
-
-void _calculateTriggerCounts() {
-  _triggerCounts.clear();
-  for (var data in _seizureData) {
-    for (var trigger in data.triggers) {
-      if(trigger.isNotEmpty){
-      if (!_triggerCounts.containsKey(trigger)) {
-        _triggerCounts[trigger] = 0;
+      if (!_monthlyCounts.containsKey(monthKey)) {
+        _monthlyCounts[monthKey] = 0;
       }
-      _triggerCounts[trigger] = _triggerCounts[trigger]! + 1;
+      _monthlyCounts[monthKey] = _monthlyCounts[monthKey]! + data.frequency;
+
+      if (!_weeklyCounts.containsKey(weekKey)) {
+        _weeklyCounts[weekKey] = 0;
+      }
+      _weeklyCounts[weekKey] = _weeklyCounts[weekKey]! + data.frequency;
     }
-   }
   }
+
+  void _calculateTriggerCounts() {
+    _triggerCounts.clear();
+    for (var data in _seizureData) {
+      for (var trigger in data.triggers) {
+        if(trigger.isNotEmpty){
+          if (!_triggerCounts.containsKey(trigger)) {
+            _triggerCounts[trigger] = 0;
+          }
+          _triggerCounts[trigger] = _triggerCounts[trigger]! + 1;
+        }
+      }
+    }
   }
 
   Widget _buildHourlyBarChart() {
@@ -122,8 +122,7 @@ void _calculateTriggerCounts() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Seizure By Hour',
-          //AppLocalizations.of(context)!.seizureByHour,
+          AppLocalizations.of(context)!.seizureByHour,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 20),
@@ -133,47 +132,47 @@ void _calculateTriggerCounts() {
             BarChartData(
               barGroups: barGroups,
               borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  show: true,
-                    bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) => Text('${value.toInt()}h',
-                            style: TextStyle(
-                              fontSize: 12,
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) => Text('${value.toInt()}h',
+                      style: TextStyle(
+                        fontSize: 12,
 
-                            ),
+                      ),
+                    ),
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 20,
+                      interval: 1,
+
+                      getTitlesWidget: (value, meta){
+                        return Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15
                           ),
-                        ),
-                    ),
-                    leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 20,
-                          interval: 1,
+                        );
 
-                          getTitlesWidget: (value, meta){
-                            return Text(
-                              value.toInt().toString(),
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 15
-                              ),
-                            );
-
-                          }
-                        ),
-                    ),
-                    topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+                      }
+                  ),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
                 ),
                 rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
+                  sideTitles: SideTitles(showTitles: false),
                 ),
 
+              ),
             ),
           ),
-        ),
         )
       ],
     );
@@ -227,7 +226,7 @@ void _calculateTriggerCounts() {
   Widget _buildAttackCounts() {
     final now = DateTime.now();
     final currentMonth = DateFormat('yyyy-MM').format(now);
-    final currentWeek = DateFormat('yyyy-ww').format(now);
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,16 +240,6 @@ void _calculateTriggerCounts() {
             '${_monthlyCounts[currentMonth]} attacks',
             style: const TextStyle(fontSize: 16),
           ),
-        const SizedBox(height: 8),
-        Text(
-          AppLocalizations.of(context)!.ataquessemana,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        if (_weeklyCounts.containsKey(currentWeek))
-          Text(
-            '${_weeklyCounts[currentWeek]} attacks',
-            style: const TextStyle(fontSize: 16),
-          ),
       ],
     );
   }
@@ -258,8 +247,8 @@ void _calculateTriggerCounts() {
 
   Widget _buildTrendComparison() {
     if (_monthlyCounts.length < 2) {
-      return const Text(
-        'Not enough data to compare trends.',
+      return Text(
+        AppLocalizations.of(context)!.trends,
         style: TextStyle(fontSize: 16),
       );
     }
@@ -269,13 +258,13 @@ void _calculateTriggerCounts() {
     final currentMonthCount = _monthlyCounts[sortedKeys.last]!;
 
     final trend = currentMonthCount > previousMonthCount
-        ? 'increased'
+        ? AppLocalizations.of(context)!.increased
         : currentMonthCount < previousMonthCount
-        ? 'decreased'
-        : 'stayed the same';
+        ? AppLocalizations.of(context)!.decreased
+        : AppLocalizations.of(context)!.stayedTheSame;
 
     return Text(
-      'Compared to last month, your attacks have $trend.',
+      '${AppLocalizations.of(context)!.comparedToLastMonth} $trend.',
       style: const TextStyle(fontSize: 16),
     );
   }
@@ -285,7 +274,7 @@ void _calculateTriggerCounts() {
       final value = entry.value.toDouble();
       return PieChartSectionData(
         value: value,
-        //title: '',
+        title: '',
         color: Colors.primaries[_triggerCounts.keys.toList().indexOf(entry.key) % Colors.primaries.length],
         radius: 50,
       );
@@ -308,8 +297,30 @@ void _calculateTriggerCounts() {
               sectionsSpace: 2,
               pieTouchData: PieTouchData(
                 touchCallback: (touchEvent, pieTouchResponse) {
+                  if (pieTouchResponse != null && pieTouchResponse.touchedSection != null) {
+                    final touchedSection = pieTouchResponse.touchedSection!;
+                    final sectionIndex = touchedSection.touchedSectionIndex;
+                    final section = sections[sectionIndex];
+                    final trigger = _triggerCounts.entries.elementAt(sectionIndex);
 
-
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Trigger Information'),
+                          content: Text('Trigger: ${trigger.key}\nOccurrences: ${trigger.value}'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -319,8 +330,8 @@ void _calculateTriggerCounts() {
         _buildLegend(),
       ],
     );
-
   }
+
 
   Widget _buildLegend() {
     return Column(

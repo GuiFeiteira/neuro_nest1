@@ -11,7 +11,7 @@ class MoodOptionBar extends StatefulWidget {
 
 class _MoodOptionBarState extends State<MoodOptionBar> {
   final List<String> imagePaths = [
-    'assets/happy.png',
+    'assets/realhappy.png',
     'assets/happy.png',
     'assets/normal.png',
     'assets/stress.png',
@@ -25,16 +25,17 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
   String? _selectedImagePath;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_selectedMood == null) {
+      _selectedMood = AppLocalizations.of(context)!.happy;
+      _selectedDescription = AppLocalizations.of(context)!.happy;
+      _selectedImagePath = imagePaths[0];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    _selectedMood = AppLocalizations.of(context)!.happy;
-    _selectedDescription = AppLocalizations.of(context)!.happy;
-    _selectedImagePath = imagePaths[0];
     final List<String> moodDescriptions = [
       AppLocalizations.of(context)!.happy,
       AppLocalizations.of(context)!.good,
@@ -56,12 +57,28 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
+            width: 180,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
+
             ),
             child: DropdownButton<String>(
-              value: _selectedMood,
+              hint: _selectedMood != null
+                  ? Row(
+                children: [
+                  SizedBox(width: 10),
+                  Image.asset(
+                    _selectedImagePath!,
+                    width: 27,
+                    height: 27,
+                  ),
+                  SizedBox(width: 18),
+                  Text(_selectedMood!),
+                  SizedBox(width: 18,)
+                ],
+              )
+                  : null,
               items: List.generate(imagePaths.length, (index) {
                 return DropdownMenuItem<String>(
                   value: moodDescriptions[index],
@@ -119,8 +136,6 @@ class _MoodOptionBarState extends State<MoodOptionBar> {
         'date': date,
         'time': time,
       });
-
-
     }
   }
 }

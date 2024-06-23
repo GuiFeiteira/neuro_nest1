@@ -23,7 +23,7 @@ class QuizzCard extends StatefulWidget {
 
 
 class _QuizzCardState extends State<QuizzCard> {
-  bool isLoading = false; // Flag to indicate card loading state
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,8 @@ class _QuizzCardState extends State<QuizzCard> {
           isLoading = false;
         });
       },
-      child: Opacity( // Wrap the card with Opacity widget
-        opacity: widget.opacity, // Set the opacity value
+      child: Opacity(
+        opacity: widget.opacity,
         child: Container(
           width: 160,
           height: 250,
@@ -76,15 +76,14 @@ class _QuizzCardState extends State<QuizzCard> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
                   Expanded(
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 10.0, right: 3, left: 5),
                         child: Image.asset(
                           widget.imagePath,
-                          width: 250,
-                          height: 250,
+                          width: 100,
+                          height: 100,
 
                         ),
                       ),

@@ -131,18 +131,19 @@ class _LandingPageState extends State<LandingPage> {
                                             children: [
                                               SignInButton.mini(
                                                 buttonSize: ButtonSize.medium,
-                                                buttonType: ButtonType.facebook,
-                                                onPressed: () {
-
-                                                },
-                                              ),
-                                              SignInButton.mini(
-                                                buttonSize: ButtonSize.medium,
                                                 buttonType: ButtonType.google,
                                                 onPressed: () {
                                                   print('click');
                                                 },
                                               ),
+                                              SignInButton.mini(
+                                                buttonSize: ButtonSize.medium,
+                                                buttonType: ButtonType.facebook,
+                                                onPressed: () {
+
+                                                },
+                                              ),
+
                                             ],
                                           ),
                                         ),

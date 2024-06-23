@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tipo_treino/l10n/l10n.dart';
-import 'package:tipo_treino/screens/sos_page.dart';
 import 'components/localProvider.dart';
+import 'components/models/emergency_contacts.dart';
 import 'screens/home_page.dart';
 import 'screens/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,8 +17,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:shake/shake.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,7 +94,25 @@ Future<void> sendEmergencyMessage2() async {
     }
   }
 
-  // Obter contatos de emergência do Firebase e enviar SMS
+  // Request location permission
+  final locationStatus = await Permission.locationWhenInUse.status;
+  if (!locationStatus.isGranted) {
+    final locationResult = await Permission.locationWhenInUse.request();
+    if (!locationResult.isGranted) {
+      print('Location permission denied');
+      return;
+    }
+  }
+
+  // Get current location
+  Position position;
+  try {
+    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  } catch (e) {
+    print('Error getting location: $e');
+    return;
+  }
+
   User? user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     final snapshot = await FirebaseFirestore.instance
@@ -107,7 +125,9 @@ Future<void> sendEmergencyMessage2() async {
       final uri = Uri(
         scheme: 'sms',
         path: contact.phoneNumber,
-        queryParameters: {'body': 'Emergency! Please help!'},
+        queryParameters: {
+          'body': 'Emergency! Please help! Current location: https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}'
+        },
       );
       await launchUrl(uri);
     }

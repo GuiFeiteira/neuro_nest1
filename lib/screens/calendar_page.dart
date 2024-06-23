@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_date_range_picker/flutter_date_range_picker.dart' as DateRangePicker;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+
+import 'dart:io';
+
 import '../components/app_bar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -23,6 +29,74 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  Future<void> _generatePdfReport(DateTime startDate, DateTime endDate) async {
+    // 1. Filter Data:
+    final filteredEvents = _events.entries.where((entry) {
+      final date = DateFormat('yyyy-MM-dd').parse(entry.key);
+      return date.isAfter(startDate) && date.isBefore(endDate);
+    }).toList();
+
+    final filteredMedications = _medicationsTaken.entries.where((entry) {
+      final date = DateFormat('yyyy-MM-dd').parse(entry.key);
+      return date.isAfter(startDate) && date.isBefore(endDate);
+    }).toList();
+
+    // 2. Create PDF Document:
+    final pdf = pw.Document();
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) {
+        return pw.Column(
+          children: [
+            pw.Text('Relatório de Eventos e Medicações'),
+            pw.Text('Período: ${DateFormat('dd/MM/yyyy').format(startDate)} - ${DateFormat('dd/MM/yyyy').format(endDate)}'),
+            pw.SizedBox(height: 20),
+            for (var entry in filteredEvents)
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(entry.key, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)), // Date header
+                  for (var event in entry.value)
+                    pw.Text('- ${event['Event']}'),
+                ],
+              ),
+            pw.SizedBox(height: 20),
+            for (var entry in filteredMedications)
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(entry.key, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)), // Date header
+                  for (var medication in entry.value)
+                    pw.Text('- $medication'),
+                ],
+              ),
+          ],
+        );
+      },
+    ));
+
+    // 3. Save PDF to local storage:
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/report.pdf');
+    await file.writeAsBytes(await pdf.save());
+
+    // 4. Show confirmation to the user:
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Relatório Gerado'),
+        content: Text('O relatório foi salvo em ${file.path}'),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadData() async {
@@ -143,15 +217,16 @@ class _CalendarPageState extends State<CalendarPage> {
                     defaultTextStyle: GoogleFonts.inter(
                       fontSize: 16.0,
                       color: Colors.grey[800],
-
                     ),
                     weekendTextStyle: GoogleFonts.inter(
                       fontSize: 16.0,
                       color: Colors.grey[400],
                     ),
                   ),
-                  headerStyle: HeaderStyle(formatButtonVisible: false,
-                      titleCentered: true),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                  ),
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
                   focusedDay: _focusedDay,
@@ -178,22 +253,24 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
             ),
             const SizedBox(height: 8.0),
+
             if (_selectedDay != null) ...[
               Container(
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  color: const Color(0x63DAAAFF)
+                  color: const Color(0x63DAAAFF),
                 ),
                 child: Padding(
-                  padding:  EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     AppLocalizations.of(context)?.eventosdia ?? 'Eventos do dia:',
                     style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
+
               Column(
                 children: _getEventsForDay(_selectedDay!).map((event) {
                   return Column(
@@ -227,7 +304,6 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                   color: const Color(0x63DAAAFF),
                 ),
-
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -248,6 +324,25 @@ class _CalendarPageState extends State<CalendarPage> {
                   );
                 }).toList(),
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  final DateTimeRange? picked = await showDateRangePicker(
+                    context: context,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                    initialDateRange: DateTimeRange(start: _selectedDay!, end: _selectedDay!),
+                  );
+
+                  if (picked != null) {
+                    DateTime startDate = picked.start;
+                    DateTime endDate = picked.end;
+                    await _generatePdfReport(startDate, endDate);
+                  }
+                },
+                child: Text('Gerar Relatório PDF'),
+              ),
+              SizedBox(height: 20),
             ],
           ],
         ),
