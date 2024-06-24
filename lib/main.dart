@@ -33,7 +33,6 @@ void main() async {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
-  await initializeService();
 
   final localeProvider = LocaleProvider();
   await localeProvider.loadLocale();
@@ -46,93 +45,8 @@ void main() async {
   );
 }
 
-Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
 
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      isForegroundMode: true,
-      autoStart: true,
-      autoStartOnBoot: true,
-    ),
-    iosConfiguration: IosConfiguration(
-      onForeground: onStart,
-      onBackground: onIosBackground,
-    ),
-  );
-}
 
-void onStart(ServiceInstance service) {
-  ShakeDetector detector = ShakeDetector.autoStart(
-    onPhoneShake: () {
-      service.invoke('sendSOS');
-    },
-  );
-
-  service.on('sendSOS').listen((event) {
-    sendEmergencyMessage2();
-  });
-
-  service.on('stopService').listen((event) {
-    service.stopSelf();
-  });
-}
-
-Future<bool> onIosBackground(ServiceInstance service) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  return true;
-}
-
-Future<void> sendEmergencyMessage2() async {
-  final status = await Permission.sms.status;
-  if (!status.isGranted) {
-    final result = await Permission.sms.request();
-    if (!result.isGranted) {
-      print('SMS permission denied');
-      return;
-    }
-  }
-
-  // Request location permission
-  final locationStatus = await Permission.locationWhenInUse.status;
-  if (!locationStatus.isGranted) {
-    final locationResult = await Permission.locationWhenInUse.request();
-    if (!locationResult.isGranted) {
-      print('Location permission denied');
-      return;
-    }
-  }
-
-  // Get current location
-  Position position;
-  try {
-    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  } catch (e) {
-    print('Error getting location: $e');
-    return;
-  }
-
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('emergencyContacts')
-        .get();
-    for (var doc in snapshot.docs) {
-      final contact = EmergencyContact.fromMap(doc.data());
-      final uri = Uri(
-        scheme: 'sms',
-        path: contact.phoneNumber,
-        queryParameters: {
-          'body': 'Emergency! Please help! Current location: https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}'
-        },
-      );
-      await launchUrl(uri);
-    }
-  }
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -104,6 +104,7 @@
   "walking": "Andar",
   "lip": "Morder os lábios, mastigar",
   "correr": "Correr",
-  "none": "Nenhum "
-
+  "none": "Nenhum ",
+  "shakeToSend": "Abanar para Enviar SOS",
+  "shakeDesc": "Ligar esta funcionalidade fará com que se o seu telemóvel for abanado em demasia envie uma mensagem SOS"
 }
