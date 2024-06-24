@@ -15,7 +15,6 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   List<SeizureData> _seizureData = [];
   Map<String, int> _monthlyCounts = {};
-  Map<String, int> _weeklyCounts = {};
   Map<String, int> _triggerCounts = {};
   Map<String, int> _hourlyCounts = {};
 
@@ -41,8 +40,12 @@ class _MyProfileState extends State<MyProfile> {
         List<String> triggers = data['possibleTriggers'].split(', ');
         String eventTime = data['eventTime'];
 
-
-        return SeizureData(date: date, frequency: 1, triggers: triggers, eventTime: eventTime,);
+        return SeizureData(
+          date: date,
+          frequency: 1,
+          triggers: triggers,
+          eventTime: eventTime,
+        );
       }).toList();
 
       setState(() {
@@ -54,38 +57,30 @@ class _MyProfileState extends State<MyProfile> {
       });
     }
   }
+
   void _calculateHourlyCounts() {
     Map<String, int> hourlyCounts = {};
 
     for (var data in _seizureData) {
-      String hourKey = data.eventTime.split(':')[0]; // Extract hour from eventTime
-
+      String hourKey = data.eventTime.split(':')[0];
       hourlyCounts[hourKey] = (hourlyCounts[hourKey] ?? 0) + 1;
     }
 
-    // Sort by hour (optional)
     final sortedEntries = hourlyCounts.entries.toList()
       ..sort((a, b) => int.parse(a.key).compareTo(int.parse(b.key)));
     _hourlyCounts = Map.fromEntries(sortedEntries);
-
   }
+
   void _calculateMonthlyAndWeeklyCounts() {
     _monthlyCounts.clear();
-    _weeklyCounts.clear();
 
     for (var data in _seizureData) {
       String monthKey = DateFormat('yyyy-MM').format(data.date);
-      String weekKey = DateFormat('yyyy-ww').format(data.date);
 
       if (!_monthlyCounts.containsKey(monthKey)) {
         _monthlyCounts[monthKey] = 0;
       }
       _monthlyCounts[monthKey] = _monthlyCounts[monthKey]! + data.frequency;
-
-      if (!_weeklyCounts.containsKey(weekKey)) {
-        _weeklyCounts[weekKey] = 0;
-      }
-      _weeklyCounts[weekKey] = _weeklyCounts[weekKey]! + data.frequency;
     }
   }
 
@@ -93,7 +88,7 @@ class _MyProfileState extends State<MyProfile> {
     _triggerCounts.clear();
     for (var data in _seizureData) {
       for (var trigger in data.triggers) {
-        if(trigger.isNotEmpty){
+        if (trigger.isNotEmpty) {
           if (!_triggerCounts.containsKey(trigger)) {
             _triggerCounts[trigger] = 0;
           }
@@ -104,7 +99,6 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   Widget _buildHourlyBarChart() {
-
     final List<BarChartGroupData> barGroups = _hourlyCounts.entries.map((entry) {
       return BarChartGroupData(
         x: int.parse(entry.key),
@@ -118,6 +112,7 @@ class _MyProfileState extends State<MyProfile> {
         ],
       );
     }).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -137,30 +132,28 @@ class _MyProfileState extends State<MyProfile> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget: (value, meta) => Text('${value.toInt()}h',
+                    getTitlesWidget: (value, meta) => Text(
+                      '${value.toInt()}h',
                       style: TextStyle(
                         fontSize: 12,
-
                       ),
                     ),
                   ),
                 ),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 20,
-                      interval: 1,
-
-                      getTitlesWidget: (value, meta){
-                        return Text(
-                          value.toInt().toString(),
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 15
-                          ),
-                        );
-
-                      }
+                    showTitles: true,
+                    reservedSize: 20,
+                    interval: 1,
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      );
+                    },
                   ),
                 ),
                 topTitles: AxisTitles(
@@ -169,57 +162,11 @@ class _MyProfileState extends State<MyProfile> {
                 rightTitles: AxisTitles(
                   sideTitles: SideTitles(showTitles: false),
                 ),
-
               ),
             ),
           ),
-        )
-      ],
-    );
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFF8ECFF),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF8ECFF),
-        title: const Text('My Profile'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-
-          child: Column(
-
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              Text(
-                AppLocalizations.of(context)!.analises,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildAttackCounts(),
-              const SizedBox(height: 16),
-              _buildTrendComparison(),
-              const SizedBox(height: 10),
-              Divider(
-                thickness: 4,
-              ),
-              const SizedBox(height: 10),
-              _buildHourlyBarChart(),
-              const SizedBox(height: 10),
-              Divider(
-                thickness: 4,
-              ),
-              const SizedBox(height: 10),
-              _buildTriggerPieChart(),
-            ],
-          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -227,6 +174,8 @@ class _MyProfileState extends State<MyProfile> {
     final now = DateTime.now();
     final currentMonth = DateFormat('yyyy-MM').format(now);
 
+    final lastMonth = DateTime(now.year, now.month - 1, now.day);
+    final lastMonthKey = DateFormat('yyyy-MM').format(lastMonth);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,19 +186,29 @@ class _MyProfileState extends State<MyProfile> {
         ),
         if (_monthlyCounts.containsKey(currentMonth))
           Text(
-            '${_monthlyCounts[currentMonth]} attacks',
+            '${_monthlyCounts[currentMonth]} ${AppLocalizations.of(context)!.attacks}',
+            style: const TextStyle(fontSize: 16),
+          ),
+        SizedBox(height: 20,),
+        Text(
+          AppLocalizations.of(context)!.ataquesmesanterior,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+
+        if (_monthlyCounts.containsKey(lastMonthKey))
+          Text(
+            '${_monthlyCounts[lastMonthKey]} ${AppLocalizations.of(context)!.attacks}',
             style: const TextStyle(fontSize: 16),
           ),
       ],
     );
   }
 
-
   Widget _buildTrendComparison() {
     if (_monthlyCounts.length < 2) {
       return Text(
         AppLocalizations.of(context)!.trends,
-        style: TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 16),
       );
     }
 
@@ -258,9 +217,9 @@ class _MyProfileState extends State<MyProfile> {
     final currentMonthCount = _monthlyCounts[sortedKeys.last]!;
 
     final trend = currentMonthCount > previousMonthCount
-        ? AppLocalizations.of(context)!.increased
-        : currentMonthCount < previousMonthCount
         ? AppLocalizations.of(context)!.decreased
+        : currentMonthCount < previousMonthCount
+        ? AppLocalizations.of(context)!.increased
         : AppLocalizations.of(context)!.stayedTheSame;
 
     return Text(
@@ -307,8 +266,8 @@ class _MyProfileState extends State<MyProfile> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('Trigger Information'),
-                          content: Text('Trigger: ${trigger.key}\nOccurrences: ${trigger.value}'),
+                          title: Text(AppLocalizations.of(context)!.trigger),
+                          content: Text('${AppLocalizations.of(context)!.trigger2} ${trigger.key}\n ${AppLocalizations.of(context)!.occurrences} ${trigger.value}'),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -332,7 +291,6 @@ class _MyProfileState extends State<MyProfile> {
     );
   }
 
-
   Widget _buildLegend() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,14 +310,56 @@ class _MyProfileState extends State<MyProfile> {
       }).take(8).toList(),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF8ECFF),
+      appBar: AppBar(
+        backgroundColor: Color(0xFFF8ECFF),
+        title: const Text('My Profile'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.analises,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              _buildAttackCounts(),
+              const SizedBox(height: 16),
+              _buildTrendComparison(),
+              const SizedBox(height: 10),
+              Divider(
+                thickness: 4,
+              ),
+              const SizedBox(height: 10),
+              _buildHourlyBarChart(),
+              const SizedBox(height: 10),
+              Divider(
+                thickness: 4,
+              ),
+              const SizedBox(height: 10),
+              _buildTriggerPieChart(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class SeizureData {
   final DateTime date;
   final int frequency;
   final List<String> triggers;
-  String eventTime;
-
+  final String eventTime;
 
   SeizureData({
     required this.date,

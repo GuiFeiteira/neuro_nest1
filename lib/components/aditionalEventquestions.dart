@@ -77,6 +77,7 @@ class _AdditionalQuestionsDialogState extends State<AdditionalQuestionsDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(height: 10,),
             TextFormField(
               controller: _durationController,
               decoration: InputDecoration(

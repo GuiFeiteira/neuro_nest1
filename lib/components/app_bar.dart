@@ -98,18 +98,7 @@ class _BottomAppBarCustomState extends State<BottomAppBarCustom> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
-                SizedBox(
-                  width: 200.0,
-                  height: 50.0,
-                  child: FloatingActionButton.extended(
-                    label:Text('Add Habit'),
-                    icon: const Icon(Icons.sports_handball_sharp),
-                    onPressed: () {
-                    },
-                    backgroundColor: Colors.white,
-                  ),
-                ),
+
 
                 const SizedBox(height: 130),
               ],

@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:sign_button/sign_button.dart';
 import 'package:tipo_treino/components/signUp_form.dart';
 import '../components/anim_butt.dart';
 import '../components/signIn_form.dart';
@@ -80,7 +79,7 @@ class _LandingPageState extends State<LandingPage> {
                             context: context,
                             pageBuilder: (context, _, __) => Center(
                               child: Container(
-                                height: 650,
+                                height: 530,
                                 margin: const EdgeInsets.symmetric(horizontal: 40),
                                 padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                                 decoration: BoxDecoration(
@@ -105,48 +104,6 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ),
                                         const SignInForm(),
-                                        const Row(
-                                          children: [
-                                            Expanded(child: Divider()),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                                              child: Text(
-                                                "OR",
-                                                style: TextStyle(
-                                                  color: Colors.black54,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(child: Divider()),
-                                          ],
-                                        ),
-                                        Text(
-                                          "Sign up with Google or Facebook",
-                                          style: TextStyle(color: Colors.black54),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 26),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              SignInButton.mini(
-                                                buttonSize: ButtonSize.medium,
-                                                buttonType: ButtonType.google,
-                                                onPressed: () {
-                                                  print('click');
-                                                },
-                                              ),
-                                              SignInButton.mini(
-                                                buttonSize: ButtonSize.medium,
-                                                buttonType: ButtonType.facebook,
-                                                onPressed: () {
-
-                                                },
-                                              ),
-
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),

@@ -7,14 +7,13 @@ import 'package:tipo_treino/components/moodOptionBar.dart';
 import 'package:tipo_treino/components/sleep.dart';
 import 'package:tipo_treino/screens/myProfile_page.dart';
 import '../components/app_bar.dart';
+import '../components/educational.dart';
 import '../components/localProvider.dart';
 import 'landing_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 class HomePage extends StatelessWidget {
-
   const HomePage({Key? key}) : super(key: key);
-
 
   Future<String?> _getUserName() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -129,75 +128,79 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FutureBuilder<String?>(
-                future: _getUserName(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const CircleAvatar(
-                          //backgroundImage: AssetImage('assets/profile_picture.png'),
-                          radius: 30,
-                        ),
-                      ],
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (!snapshot.hasData || snapshot.data == null) {
-                    return const Text('User not found');
-                  } else {
-                    String userName = snapshot.data!;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.welcomeback(userName),
-                          style: const TextStyle(
-                            fontSize: 22,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (snapshot.hasData && snapshot.data != null) {
-                              _showProfileDialog(context, snapshot.data!); // Show dialog if user data is available
-                            }
-                          },
-                          child: const CircleAvatar(
+          child: SingleChildScrollView( // Add SingleChildScrollView here
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FutureBuilder<String?>(
+                  future: _getUserName(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const CircleAvatar(
                             //backgroundImage: AssetImage('assets/profile_picture.png'),
                             radius: 30,
                           ),
-                        ),
-                      ],
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: EdgeInsets.all(7.0),
-                child: Text(
-                    AppLocalizations.of(context)!.sleepoption
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data == null) {
+                      return const Text('User not found');
+                    } else {
+                      String userName = snapshot.data!;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.welcomeback(userName),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                _showProfileDialog(context, snapshot.data!); // Show dialog if user data is available
+                              }
+                            },
+                            child: const CircleAvatar(
+                              //backgroundImage: AssetImage('assets/profile_picture.png'),
+                              radius: 30,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
-              ),
-              SleepOptionBar(),
-              const SizedBox(height: 18),
-              Padding(
-                padding: EdgeInsets.all(7.0),
-                child: Text(
-                  AppLocalizations.of(context)!.howufell,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
+                const SizedBox(height: 8),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                      AppLocalizations.of(context)!.sleepoption
                   ),
                 ),
-              ),
-              MoodOptionBar()
-            ],
+                SleepOptionBar(),
+                const SizedBox(height: 18),
+                Padding(
+                  padding: EdgeInsets.all(7.0),
+                  child: Text(
+                    AppLocalizations.of(context)!.howufell,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                MoodOptionBar(),
+                SizedBox(height: 20.0),
+                EducationalResources(),
+              ],
+            ),
           ),
         ),
       ),

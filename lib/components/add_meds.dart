@@ -21,7 +21,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _frequencyOptions = {
-    'pt':['Diariamente', 'Alguns Dias da Semana', 'As Needed'],
+    'pt':['Diariamente', 'Alguns Dias da Semana', 'Toma Unica'],
     'en':['Daily', 'A Few Days of the Week', 'As Needed']
   };
   final _timesPerDayOptions = {
@@ -35,15 +35,16 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
   bool _notify = false;
 
   List<Medication> _availableMedications = [
-    Medication(name: 'Medication 1', time: '10:00 AM'),
-    Medication(name: 'Medication 2', time: '12:00 PM'),
-    Medication(name: 'GGMedication 1', time: '10:00 AM'),
-    Medication(name: 'AMedication 2', time: '12:00 PM'),
-    Medication(name: 'asdMedication 1', time: '10:00 AM'),
-    Medication(name: 'pliMedication 2', time: '12:00 PM'),
-    Medication(name: 'AVCAMedication 2', time: '12:00 PM'),
-    Medication(name: 'aaEEasdMedication 1', time: '10:00 AM'),
-    Medication(name: 'ApliMedication 2', time: '12:00 PM'),
+    Medication(name: 'Medication 1'),
+    Medication(name: 'Medication 2'),
+    Medication(name: 'GGMedication 1'),
+    Medication(name: 'AMedication 2'),
+    Medication(name: 'asdMedication 1'),
+    Medication(name: 'pliMedication 2'),
+    Medication(name: 'AVCAMedication 2'),
+    Medication(name: 'aaEEasdMedication 1'),
+    Medication(name: 'ApliMedication 2'),
+    Medication(name: 'Valproato')
   ];
   List<Medication> _filteredMedications = [];
 
@@ -363,6 +364,9 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 18.0),
                 child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                  ),
                   onPressed: _submitMedication,
                   child: Text(AppLocalizations.of(context)!.addmeds),
                 ),
@@ -377,7 +381,7 @@ class _AddMedicationFormState extends State<AddMedicationForm> {
 
 class Medication {
   final String name;
-  final String time;
 
-  Medication({required this.name, required this.time});
+
+  Medication({required this.name});
 }

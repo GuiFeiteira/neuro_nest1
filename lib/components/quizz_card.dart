@@ -52,7 +52,7 @@ class _QuizzCardState extends State<QuizzCard> {
               BoxShadow(
                 color: Color(0x99000000),
                 blurRadius: 9,
-                offset: Offset(-8, 6),
+                offset: Offset(-5, 5),
                 spreadRadius: 2,
               )
             ],

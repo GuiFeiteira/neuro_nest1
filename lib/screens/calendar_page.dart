@@ -31,74 +31,6 @@ class _CalendarPageState extends State<CalendarPage> {
     _loadData();
   }
 
-  Future<void> _generatePdfReport(DateTime startDate, DateTime endDate) async {
-    // 1. Filter Data:
-    final filteredEvents = _events.entries.where((entry) {
-      final date = DateFormat('yyyy-MM-dd').parse(entry.key);
-      return date.isAfter(startDate) && date.isBefore(endDate);
-    }).toList();
-
-    final filteredMedications = _medicationsTaken.entries.where((entry) {
-      final date = DateFormat('yyyy-MM-dd').parse(entry.key);
-      return date.isAfter(startDate) && date.isBefore(endDate);
-    }).toList();
-
-    // 2. Create PDF Document:
-    final pdf = pw.Document();
-    pdf.addPage(pw.Page(
-      build: (pw.Context context) {
-        return pw.Column(
-          children: [
-            pw.Text('Relatório de Eventos e Medicações'),
-            pw.Text('Período: ${DateFormat('dd/MM/yyyy').format(startDate)} - ${DateFormat('dd/MM/yyyy').format(endDate)}'),
-            pw.SizedBox(height: 20),
-            for (var entry in filteredEvents)
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(entry.key, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)), // Date header
-                  for (var event in entry.value)
-                    pw.Text('- ${event['Event']}'),
-                ],
-              ),
-            pw.SizedBox(height: 20),
-            for (var entry in filteredMedications)
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(entry.key, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)), // Date header
-                  for (var medication in entry.value)
-                    pw.Text('- $medication'),
-                ],
-              ),
-          ],
-        );
-      },
-    ));
-
-    // 3. Save PDF to local storage:
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/report.pdf');
-    await file.writeAsBytes(await pdf.save());
-
-    // 4. Show confirmation to the user:
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Relatório Gerado'),
-        content: Text('O relatório foi salvo em ${file.path}'),
-        actions: [
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _loadData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -324,24 +256,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  final DateTimeRange? picked = await showDateRangePicker(
-                    context: context,
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2030),
-                    initialDateRange: DateTimeRange(start: _selectedDay!, end: _selectedDay!),
-                  );
 
-                  if (picked != null) {
-                    DateTime startDate = picked.start;
-                    DateTime endDate = picked.end;
-                    await _generatePdfReport(startDate, endDate);
-                  }
-                },
-                child: Text('Gerar Relatório PDF'),
-              ),
               SizedBox(height: 20),
             ],
           ],

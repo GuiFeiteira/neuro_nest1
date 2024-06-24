@@ -48,7 +48,14 @@ class _SignInFormState extends State<SignUpForm> {
             child: TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Email',
+                hintText: 'Email',
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Icon(
+                    color: Colors.indigo,
+                    Icons.email_outlined,
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -64,7 +71,16 @@ class _SignInFormState extends State<SignUpForm> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Password',
+
+                hintText: 'Password',
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Icon(
+                    color: Colors.indigo,
+                    Icons.lock_outline_rounded,
+                  ),
+                ),
+
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
